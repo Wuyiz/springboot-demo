@@ -1,0 +1,37 @@
+server:
+  port: 8100
+
+spring:
+  application:
+    name: demo-middleware-websocket-rabbitmq
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+  rabbitmq:
+    port: 5672
+    host: localhost
+    username: service
+    password: dtvsi.service
+    virtual-host: dtvsi
+    # 交换机回调：确认消息已发送到交换机(Exchange)
+    # none：禁用发布确认（默认）；correlated：异步确认模式，发布消息成功到交换机会触发回调；simple：同步确认模式
+    # simple：简单模式（即同步确认模式），发一条确认一条，会回调，但是需要rabbitTemple调用waitForConfirms或waitForConfirmsOrDie方法做，
+    # 另外waitForConfirmsOrDie返回false会关闭channel，关闭channel后，接下来的消息，无法发送到broker
+    publisher-confirm-type: correlated
+    # 队列回调：确认消息已发送到队列(Queue)
+    publisher-returns: true
+#    listener:
+#      simple:
+#        # 消费端开启ack 手动应答
+#        acknowledge-mode: manual
+#        # 是否支持重试
+#        retry:
+#          enabled: true
+#        # 指定最小的消费者数量
+#        concurrency: 1
+#        # 指定最大的消费者数量
+#        max-concurrency: 1
+
+logging:
+  level:
+    com.example: debug

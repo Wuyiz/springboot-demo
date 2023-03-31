@@ -1,0 +1,55 @@
+spring:
+  kafka:
+    # kafka-cluster
+    bootstrap-servers: 115.238.60.141:17798
+    producer:
+      # retry times
+      retries: 1
+      # 应答级别:多少个分区副本备份完成时向生产者发送ack确认(可选0、1、all/-1)
+      acks: 1
+      # 每次批量发送消息的数量
+      batch-size: 16384
+      # 生产端缓冲区大小
+      buffer-memory: 33554432
+      properties:
+        # 当生产端积累的消息达到batch-size或接收到消息linger.ms后,生产者就会将消息提交给kafka
+        # linger.ms为0表示每接收到一条消息就提交给kafka,这时候batch-size其实就没用了
+        linger.ms: 1
+      # 指定消息key和消息体的编解码方式
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer: # consumer消费者
+      # 默认的消费组ID
+      group-id: test-group
+      # 默认的消费主题
+      # topic-name: test,test2
+      # 是否自动提交offset
+      enable-auto-commit: false
+      # 提交offset延时(接收到消息后多久提交offset)
+      # auto-commit-interval: 100
+      # 当kafka中没有初始offset或offset超出范围时将自动重置offset
+      # earliest:当各分区下有已提交的offset时，从提交的offset开始消费；无提交的offset时，从头开始消费
+      # latest:当各分区下有已提交的offset时，从提交的offset开始消费；无提交的offset时，消费新产生的该分区下的数据
+      # none:topic各分区都存在已提交的offset时，从offset后开始消费；只要有一个分区不存在已提交的offset，则抛出异常
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      # 批量消费每次最多消费多少条消息
+      # 每次拉取一条，一条条消费，当然是具体业务状况设置
+      # max-poll-records: 1
+      # 指定心跳包发送频率，即间隔多长时间发送一次心跳包，优化该值的设置可以减少Rebalance操作，默认时间为3秒；
+      # heartbeat-interval: 6000
+    #监听器设置
+    listener:
+      #消费端监听的topic不存在时，项目启动会报错(关掉)
+      missing-topics-fatal: true
+      #设置消费类型 批量消费 batch，单条消费：single
+      #type: batch
+      #指定容器的线程数，提高并发量
+      #concurrency: 3
+      #手动提交偏移量
+      ack-mode: manual
+
+logging:
+  level:
+    com.example: debug

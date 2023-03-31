@@ -1,0 +1,13 @@
+socket:
+  # 监听端口
+  port: 8505
+  #ip地址
+  #  host: 192.168.99.5
+  host: 0.0.0.0
+
+
+remote: "测试环境变量数据"
+
+logging:
+  level:
+    com.example: debug
