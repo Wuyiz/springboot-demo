@@ -11,7 +11,7 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 
 @Slf4j
-public class SimpleTest {
+class SimpleTest {
 
     @SneakyThrows
     @Test

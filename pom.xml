@@ -72,6 +72,12 @@
             <artifactId>hutool-all</artifactId>
             <version>5.8.15</version>
         </dependency>
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <version>4.2.0</version>
+            <scope>test</scope>
+        </dependency>
 
         <!--swagger-->
         <!--<dependency>
@@ -151,8 +157,9 @@
                     </configuration>
                     <!--<executions>
                         <execution>
+                            &lt;!&ndash;ps：如果pom已经继承了spring-boot-starter-parent，则无需增加goals=repackage参数，因为parent中已包含此参数&ndash;&gt;
                             <goals>
-                                &lt;!&ndash;
+                                &lt;!&ndash;goal标签的repackage作用：
                                     1：pom中加入repackage打的是可执行的包，MANIFEST.MF有启动类，但是可执行的包不能作为依赖引入，引入这样的jar会报错找不到类。
                                     2：pom中不加repackage打的是依赖包，不可执行，MANIFEST.MF中没有启动类，但是可以当作依赖jar包引入其他项目中。
                                     3：打包插件版本应该和springboot版本一致，否则会报版本报错。如果子模块有引入其他模块。直接子模块打包会报错找不到这个依赖（因为会从仓库里去找），需要整个项目一起打包，才能打成功。

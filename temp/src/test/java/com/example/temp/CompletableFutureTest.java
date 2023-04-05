@@ -65,6 +65,7 @@ public class CompletableFutureTest {
         log.info("getPay=============");
         try {
             Thread.sleep(sec);
+            // Awaitility.await().atMost(5,TimeUnit.SECONDS);
         } catch (Exception e) {
             log.error("error: ", e);
         }
