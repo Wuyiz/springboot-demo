@@ -1,9 +1,9 @@
 server:
   port: 8080
 
-#spring:
-#  application:
-#    name: demo-temp
+spring:
+  application:
+    name: demo-temp
 #  jackson:
 #    time-zone: GMT+8
 #    date-format: yyyy-MM-dd HH:mm:ss
