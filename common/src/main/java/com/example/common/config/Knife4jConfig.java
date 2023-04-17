@@ -62,8 +62,8 @@ public class Knife4jConfig {
      * 好处是可以使用WebServerInitializedEvent获取正在运行的服务器的本地端口
      */
     @Component
-    static class Knife4jListenerLog implements ApplicationListener<WebServerInitializedEvent> {
-        private static final Logger logger = LoggerFactory.getLogger(Knife4jListenerLog.class);
+    static class Knife4jStartupLog implements ApplicationListener<WebServerInitializedEvent> {
+        private static final Logger logger = LoggerFactory.getLogger(Knife4jStartupLog.class);
 
         @Resource
         private Environment env;
