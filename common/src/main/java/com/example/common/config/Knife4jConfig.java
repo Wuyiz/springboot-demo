@@ -33,26 +33,15 @@ public class Knife4jConfig {
     @Bean
     @Order(1)
     public Docket docketBean() {
-        return new Docket(DocumentationType.SWAGGER_2)
-                .enable(true)
-                .apiInfo(apiInfo())
+        return new Docket(DocumentationType.SWAGGER_2).enable(true).apiInfo(apiInfo())
                 // 分组名称
-                .groupName("测试分组123")
-                .select()
+                .groupName("测试分组123").select()
                 // 这里指定Controller扫描包路径
-                .apis(RequestHandlerSelectors.any())
-                .paths(PathSelectors.any())
-                .build();
+                .apis(RequestHandlerSelectors.any()).paths(PathSelectors.any()).build();
     }
 
     private ApiInfo apiInfo() {
-        return new ApiInfoBuilder()
-                .title("Knife4j接口文档——标题")
-                .description("Knife4j接口文档——description")
-                .termsOfServiceUrl("https://doc.xiaominfo.com/docs/quick-start")
-                .contact(new Contact("Wuyiz", "https://cnblogs.com/suhai", "wuyiz@foxmail.com"))
-                .version("1.0.0")
-                .build();
+        return new ApiInfoBuilder().title("Knife4j接口文档——标题").description("Knife4j接口文档——description").termsOfServiceUrl("https://doc.xiaominfo.com/docs/quick-start").contact(new Contact("Wuyiz", "https://cnblogs.com/suhai", "wuyiz@foxmail.com")).version("1.0.0").build();
     }
 
 
@@ -61,7 +50,7 @@ public class Knife4jConfig {
      * <p>
      * 好处是可以使用WebServerInitializedEvent获取正在运行的服务器的本地端口
      */
-    @Configuration
+    @Component
     static class Knife4jListenerLog implements ApplicationListener<WebServerInitializedEvent> {
         private static final Logger logger = LoggerFactory.getLogger(Knife4jListenerLog.class);
 
@@ -81,16 +70,7 @@ public class Knife4jConfig {
             String applicationName = Optional.ofNullable(env.getProperty("spring.application.name")).orElse("");
             int serverPort = webServerInitializedEvent.getWebServer().getPort();
             String contextPath = Objects.requireNonNull(webApplicationConnect.getServletContext()).getContextPath();
-            logger.info("\n-----------------------------------------------------------------\n\t" +
-                            "Application '{}' is running! Access URLs:\n\t" +
-                            "Local: \t\thttp://localhost:{}{}\n\t" +
-                            "External: \thttp://{}:{}{}\n\t" +
-                            "Doc: \t\thttp://{}:{}{}/doc.html\n" +
-                            "-----------------------------------------------------------------",
-                    applicationName,
-                    serverPort, contextPath,
-                    hostAddress, serverPort, contextPath,
-                    hostAddress, serverPort, contextPath);
+            logger.info("\n-----------------------------------------------------------------\n\t" + "Application '{}' is running! Access URLs:\n\t" + "Local: \t\thttp://localhost:{}{}\n\t" + "External: \thttp://{}:{}{}\n\t" + "Doc: \t\thttp://{}:{}{}/doc.html\n" + "-----------------------------------------------------------------", applicationName, serverPort, contextPath, hostAddress, serverPort, contextPath, hostAddress, serverPort, contextPath);
         }
     }
 
@@ -113,16 +93,7 @@ public class Knife4jConfig {
             String serverPort = Optional.ofNullable(env.getProperty("server.port")).orElse("8080");
             String contextPath = Optional.ofNullable(env.getProperty("server.servlet.context-path")).orElse("");
 
-            logger.info("\n-----------------------------------------------------------------\n" +
-                            "Application '{}' is running! Access URLs:\n\t" +
-                            "Local: \t\thttp://localhost:{}{}\n\t" +
-                            "External: \thttp://{}:{}{}\n\t" +
-                            "Doc: \t\thttp://{}:{}{}/doc.html\n" +
-                            "-----------------------------------------------------------------",
-                    applicationName,
-                    serverPort, contextPath,
-                    hostAddress, serverPort, contextPath,
-                    hostAddress, serverPort, contextPath);
+            logger.info("\n-----------------------------------------------------------------\n" + "Application '{}' is running! Access URLs:\n\t" + "Local: \t\thttp://localhost:{}{}\n\t" + "External: \thttp://{}:{}{}\n\t" + "Doc: \t\thttp://{}:{}{}/doc.html\n" + "-----------------------------------------------------------------", applicationName, serverPort, contextPath, hostAddress, serverPort, contextPath, hostAddress, serverPort, contextPath);
         }
     }
 }
