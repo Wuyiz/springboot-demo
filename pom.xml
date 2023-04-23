@@ -24,13 +24,12 @@
 
     <properties>
         <java.version>1.8</java.version>
+        <!-- 指定项目在maven编译时jdk的版本，很重要 -->
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
         <!-- 指定项目编码环境 -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <!-- 指定项目在maven编译时jdk的版本，很重要 -->
-        <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
-        <maven.compiler.source>${java.version}</maven.compiler.source>
-        <maven.compiler.target>${java.version}</maven.compiler.target>
     </properties>
 
     <dependencies>
@@ -134,6 +133,7 @@
                 <profiles.active>dev</profiles.active>
                 <logging.level>debug</logging.level>
             </properties>
+            <!--默认激活此环境变量-->
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
@@ -158,9 +158,12 @@
 
     <build>
         <resources>
+            <!--资源目录resources中的文件如果要引用pom中定义的属性，需要在resources插件增加如下配置-->
+            <!--其实spring-boot-starter-parent父依赖已经帮我们增加了yml、yaml和properties文件的相关配置-->
             <resource>
                 <directory>src/main/resources</directory>
-                <!--解决找不到@profile.name@-->
+                <!--[Maven中profile和filtering实现多个环境下的属性过滤]https://www.cnblogs.com/atai/p/6933966.html-->
+                <!--filtering设置为true，表示让资源目录中引用pom定义的属性，解决找不到@profile.name@-->
                 <filtering>true</filtering>
             </resource>
         </resources>
@@ -170,9 +173,9 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <!--maven编译时指定jdk版本和编码格式-->
-                    <source>1.8</source>
-                    <target>1.8</target>
-                    <encoding>UTF-8</encoding>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
             <plugin>

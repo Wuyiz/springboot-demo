@@ -1,6 +1,0 @@
-8080            temp
-
-
-----            netty
-----            spring-kafka
-8100            websocket-rabbitmq
