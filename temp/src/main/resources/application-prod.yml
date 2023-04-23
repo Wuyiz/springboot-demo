@@ -1,0 +1,14 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /temp2
+
+
+backImg:
+  backImgInfoList:
+    - path: static/1.jpg
+      coordinate: [ "160,470","630,460" ]
+    - path: static/2.jpg
+      coordinate: [ "409,144","630,370","852,173" ]
+    - path: ./static/3.jpg
+      coordinate: [ "510,198" ]
