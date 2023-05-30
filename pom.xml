@@ -69,7 +69,8 @@
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
-            <version>5.8.15</version>
+            <!--hutool-bom中没有hutool-all依赖包，这里需要指定版本-->
+            <version>5.8.19</version>
         </dependency>
 
         <!--junit测试中不要使用Thread.sleep()方法，在测试运行时线程并不会正常阻塞，请使用异步工具类阻塞方法，而非线程-->
@@ -109,6 +110,14 @@
                 <groupId>com.github.xiaoymin</groupId>
                 <artifactId>knife4j-dependencies</artifactId>
                 <version>3.0.3</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-bom</artifactId>
+                <version>5.8.19</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

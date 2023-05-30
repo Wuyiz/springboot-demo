@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: demo-temp
+  profiles:
+    # ${}方式会被maven处理，但是这里不起作用
+    # 原因是如果pom继承了spring-boot-starter-parent，springboot会替换maven-resources-plugins默认的${}方式为‘@@’方式，例如@name@
+    # active: ${profiles.active}
+    active: @profiles.active@
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss

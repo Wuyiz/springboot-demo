@@ -1,5 +1,7 @@
 package com.example.temp.controller;
 
+import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson2.JSONWriter;
 import com.example.common.result.Result;
 import lombok.Data;
 import lombok.SneakyThrows;
@@ -45,6 +47,14 @@ public class TestController {
         result.put("null", null);
         log.debug("config  输出：{}", result);
         return Result.success(result);
+    }
+
+    @PostMapping("/callback")
+    public Result<?> testCallback(String eventId, String status, @RequestBody JSONObject msg) {
+        log.info("callback  输出：{}", msg.toJSONString(JSONWriter.Feature.PrettyFormat));
+        log.info("callback  输出：{}", JSONObject.toJSONString(msg, JSONWriter.Feature.PrettyFormat));
+        log.info("callback  输出：{}{}", eventId, status);
+        return Result.success();
     }
 
     @Data
