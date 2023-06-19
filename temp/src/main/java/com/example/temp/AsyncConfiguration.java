@@ -61,6 +61,20 @@ public class AsyncConfiguration implements AsyncConfigurer {
 
     }
 
+    /**
+     * IO密集型线程池配置模板，删除注释等其他无需内容
+     */
+    private ThreadPoolTaskExecutor ioPool() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        int core = Runtime.getRuntime().availableProcessors();
+        executor.setCorePoolSize(core * 2);
+        executor.setMaxPoolSize(core * 4);
+        executor.setQueueCapacity(200);
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+        executor.setThreadNamePrefix("async-pool-");
+        return executor;
+    }
+
     @Override
     public Executor getAsyncExecutor() {
         return asyncDefaultExecutor();
@@ -68,8 +82,8 @@ public class AsyncConfiguration implements AsyncConfigurer {
 
     @Override
     public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
-        return (ex, method, params) -> {
-            log.error("Async Method:{} \t Exception：{}", method.getName(), ex.getMessage());
-        };
+        return (ex, method, params) -> log.error(
+                "Exception handler for async method '{}' threw unexpected exception itself",
+                method.toGenericString(), ex);
     }
 }
