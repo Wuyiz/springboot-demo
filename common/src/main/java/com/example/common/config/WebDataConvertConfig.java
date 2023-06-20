@@ -11,6 +11,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import java.math.BigInteger;
 import java.util.List;
 
+@Deprecated
 // @EnableWebMvc
 // @Configuration
 public class WebDataConvertConfig implements WebMvcConfigurer {
