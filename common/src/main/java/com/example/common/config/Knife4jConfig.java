@@ -9,6 +9,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -19,7 +20,6 @@ import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Resource;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -71,7 +71,7 @@ public class Knife4jConfig {
         private WebApplicationContext webApplicationConnect;
 
         @Override
-        public void onApplicationEvent(@Nonnull WebServerInitializedEvent webServerInitializedEvent) {
+        public void onApplicationEvent(@NonNull WebServerInitializedEvent webServerInitializedEvent) {
             String hostAddress = null;
             try {
                 hostAddress = InetAddress.getLocalHost().getHostAddress();
