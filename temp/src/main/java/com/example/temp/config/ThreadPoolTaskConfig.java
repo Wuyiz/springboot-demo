@@ -1,4 +1,4 @@
-package com.example.temp;
+package com.example.temp.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

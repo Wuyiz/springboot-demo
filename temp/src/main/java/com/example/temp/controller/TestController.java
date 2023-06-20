@@ -3,12 +3,14 @@ package com.example.temp.controller;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONWriter;
 import com.example.common.result.Result;
+import com.example.temp.service.TestService;
 import lombok.Data;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -23,21 +25,31 @@ import java.util.Map;
 @RequestMapping("/test")
 @Validated
 public class TestController {
+    @Resource
+    private TestService testService;
 
-    @SneakyThrows
-    @GetMapping("/1")
-    public Result<?> testGet(@RequestBody() Integer user, @RequestParam Integer id) {
-        log.debug("1  输出：{}   {}", user, id);
+    @GetMapping("/async")
+    public Result<?> testAsync() {
+        testService.asyncMethod();
         return Result.success();
     }
 
     @SneakyThrows
-    @GetMapping("/2")
-    public Result<?> testPost(Integer person) {
-        log.debug("2  输出：{}", person);
+    @GetMapping("/get")
+    public Result<?> testGet(@RequestParam Integer id) {
+        log.debug("testGet  输出： {}", id);
+        return Result.success();
+    }
+
+    @SneakyThrows
+    @GetMapping("/person")
+    public Result<?> testPost(Person person) {
+        log.debug("testPost  输出：{}", person);
         System.out.println(Integer.lowestOneBit(3628800));
+
         return Result.success();
     }
+
 
     @GetMapping("/config")
     public Result<?> testConfig() {

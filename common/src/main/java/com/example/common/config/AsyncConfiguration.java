@@ -1,7 +1,8 @@
-package com.example.temp;
+package com.example.common.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
+import org.springframework.aop.interceptor.SimpleAsyncUncaughtExceptionHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
@@ -82,8 +83,6 @@ public class AsyncConfiguration implements AsyncConfigurer {
 
     @Override
     public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
-        return (ex, method, params) -> log.error(
-                "Exception handler for async method '{}' threw unexpected exception itself",
-                method.toGenericString(), ex);
+        return new SimpleAsyncUncaughtExceptionHandler();
     }
 }
