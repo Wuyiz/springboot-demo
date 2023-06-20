@@ -1,11 +1,14 @@
 package com.example.wsmq.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AmqpTemplate;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
@@ -64,7 +67,7 @@ public class RabbitController {
         param.put("data", channelId);
         param.put("code", actionTypeExit);
         amqpTemplate.convertAndSend(EXCHANGE, ROUTING_KEY, param);
-        log.info("消息发送{}",JSON.toJSONString(param, true));
+        log.info("消息发送{}", JSON.toJSONString(param));
         return param;
     }
 }

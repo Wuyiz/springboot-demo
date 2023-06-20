@@ -2,8 +2,8 @@ package com.example.netty.server;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.spring.SpringUtil;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONWriter;
 import com.example.netty.server.model.BraceletMessage;
 import com.example.netty.server.model.BraceletMessageTypeConstant;
 import io.netty.buffer.ByteBuf;
@@ -34,7 +34,7 @@ import java.util.List;
  * <p>
  * 注意：由于在{@link io.netty.channel.ChannelInitializer#initChannel(Channel)}中使用了new NettyServerHandler()实例的方式，
  * 导致NettyServerHandler并未被spring容器托管，所以在此类中通过
- * {@link org.springframework.beans.factory.annotation.Autowired @Autowired}自动注入的任何Bean均为null
+ * {@link org.springframework.beans.factory.annotation.Autowired @ Autowired }自动注入的任何Bean均为null
  * </p>
  * <p>
  * 解决办法：
@@ -90,7 +90,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<String> {
         if (ChannelMap.getChannelMap().containsKey(channelId)) {
             log.info("客户端：{} 已存在建立的连接，当前连接通道数量：{} ", channelId, ChannelMap.getChannelMap().size());
         } else {
-            //保存连接
+            // 保存连接
             ChannelMap.addChannel(channelId, ctx.channel());
             log.info("客户端：{}，[IP：{} PORT：{}]连接netty服务器", channelId, clientIp, clientPort);
             log.info("当前连接通道数量: {}", ChannelMap.getChannelMap().size());
@@ -156,7 +156,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<String> {
             }
         }
         if (!CollectionUtils.isEmpty(messageList)) {
-            log.debug("报文解析结果(json)：{}", JSON.toJSONString(messageList, SerializerFeature.WriteMapNullValue));
+            log.debug("报文解析结果(json)：{}", JSON.toJSONString(messageList, JSONWriter.Feature.WriteMapNullValue));
             // 根据协议文档对终端请求响应数据
             String messageResp = messageRespHandle(messageList);
             channelWrite(ctx.channel().id(), messageResp);
@@ -221,8 +221,8 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<String> {
             log.debug("服务端响应消息为空");
             return;
         }
-        //将客户端的信息直接返回写入ctx
-        //刷新缓存区
+        // 将客户端的信息直接返回写入ctx
+        // 刷新缓存区
         ByteBuf buf = Unpooled.copiedBuffer(msg.getBytes());
         channel.writeAndFlush(buf);
         log.debug("服务端响应客户端[{}]数据：{}", channel.id(), msg);
