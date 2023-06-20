@@ -1,6 +1,5 @@
 package com.example.common.config;
 
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
@@ -20,6 +19,7 @@ import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Resource;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -34,7 +34,7 @@ public class Knife4jConfig {
     @Bean
     public Docket docketBean() {
         return new Docket(DocumentationType.SWAGGER_2)
-                .enable(true)
+                .enable(knife4jProps.getEnable())
                 .apiInfo(apiInfo())
                 // 分组名称
                 // .groupName("api分组名称")
@@ -56,7 +56,6 @@ public class Knife4jConfig {
                 .build();
     }
 
-
     /**
      * WebServer准备就绪时发布事件
      * <p>
@@ -72,15 +71,15 @@ public class Knife4jConfig {
         private WebApplicationContext webApplicationConnect;
 
         @Override
-        public void onApplicationEvent(@NotNull WebServerInitializedEvent webServerInitializedEvent) {
+        public void onApplicationEvent(@Nonnull WebServerInitializedEvent webServerInitializedEvent) {
             String hostAddress = null;
             try {
                 hostAddress = InetAddress.getLocalHost().getHostAddress();
             } catch (UnknownHostException e) {
                 logger.error("获取本地ip地址失败", e);
             }
-            String applicationName = Optional.ofNullable(env.getProperty("spring.application.name")).orElse("");
             int serverPort = webServerInitializedEvent.getWebServer().getPort();
+            String applicationName = Optional.ofNullable(env.getProperty("spring.application.name")).orElse("");
             String contextPath = Objects.requireNonNull(webApplicationConnect.getServletContext()).getContextPath();
             logger.info("\n-----------------------------------------------------------------\n\t" +
                             "Application '{}' is running! Access URLs:\n\t" +
