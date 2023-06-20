@@ -56,7 +56,8 @@ public class AsyncConfiguration implements AsyncConfigurer {
         // 自定义线程池每个线程的名称前缀
         executor.setThreadNamePrefix("async-pool-");
 
-        // 线程初始化，如果线程池交由spring管理时，springboot会自动调用方法进行初始化，用户无需额外操作
+        // initialize()方法不需要显式调用，可以直接创建ThreadPoolTaskExecutor实例，因为线程池在创建实例时已经自动初始化了。
+        // initialize()方法的具体作用是执行一些初始化操作，例如创建线程池所需的队列等。
         // executor.initialize();
         return executor;
 
@@ -65,7 +66,7 @@ public class AsyncConfiguration implements AsyncConfigurer {
     /**
      * IO密集型线程池配置模板，删除注释等其他无需内容
      */
-    private ThreadPoolTaskExecutor ioPool() {
+    private ThreadPoolTaskExecutor ioPoolTemplate() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         int core = Runtime.getRuntime().availableProcessors();
         executor.setCorePoolSize(core * 2);
