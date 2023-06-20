@@ -9,3 +9,9 @@ spring:
   jackson:
     time-zone: GMT+8
     date-format: yyyy-MM-dd HH:mm:ss
+
+knife4j-custom:
+  title: Knife4j接口文档 - ${spring.application.name}
+  version: 1.0.0
+  description: Knife4j接口文档 - description
+  base-package: com.example.temp.controller

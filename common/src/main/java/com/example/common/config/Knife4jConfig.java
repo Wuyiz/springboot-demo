@@ -9,7 +9,6 @@ import org.springframework.boot.web.context.WebServerInitializedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
@@ -29,29 +28,31 @@ import java.util.Optional;
 
 @Configuration
 public class Knife4jConfig {
+    @Resource
+    private Knife4jProps knife4jProps;
 
     @Bean
-    @Order(1)
     public Docket docketBean() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .enable(true)
                 .apiInfo(apiInfo())
                 // 分组名称
-                .groupName("测试分组123")
+                // .groupName("api分组名称")
                 .select()
-                // 这里指定Controller扫描包路径
-                .apis(RequestHandlerSelectors.any())
+                // 指定Controller扫描包路径
+                // .apis(RequestHandlerSelectors.any())
+                .apis(RequestHandlerSelectors.basePackage(knife4jProps.getBasePackage()))
                 .paths(PathSelectors.any())
                 .build();
     }
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("Knife4j接口文档——标题")
-                .description("Knife4j接口文档——description")
+                .title(knife4jProps.getTitle())
+                .version(knife4jProps.getVersion())
+                .description(knife4jProps.getDescription())
                 .termsOfServiceUrl("https://doc.xiaominfo.com/docs/quick-start")
                 .contact(new Contact("Wuyiz", "https://cnblogs.com/suhai", "wuyiz@foxmail.com"))
-                .version("1.0.0")
                 .build();
     }
 
