@@ -5,9 +5,13 @@ import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.aop.interceptor.SimpleAsyncUncaughtExceptionHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.TaskDecorator;
+import org.springframework.lang.NonNull;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -53,6 +57,9 @@ public class AsyncConfiguration implements AsyncConfigurer {
         // executor.setWaitForTasksToCompleteOnShutdown(true);
         // executor.setAwaitTerminationSeconds(20);
 
+        // 配置装饰器使其生效
+        executor.setTaskDecorator(new ContextTaskDecorator());
+
         // 自定义线程池每个线程的名称前缀
         executor.setThreadNamePrefix("async-pool-");
 
@@ -73,6 +80,7 @@ public class AsyncConfiguration implements AsyncConfigurer {
         executor.setMaxPoolSize(core * 4);
         executor.setQueueCapacity(200);
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+        executor.setTaskDecorator(new ContextTaskDecorator());
         executor.setThreadNamePrefix("async-pool-");
         return executor;
     }
@@ -85,5 +93,31 @@ public class AsyncConfiguration implements AsyncConfigurer {
     @Override
     public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
         return new SimpleAsyncUncaughtExceptionHandler();
+    }
+
+    /**
+     * TaskDecorator装饰器
+     * <p>
+     * 解决@Async注解的父子线程之间上下文（例如RequestAttributes等）不能共享的问题
+     * <p>
+     * 注意：需要在创建线程池时加入时将此装饰器
+     */
+    static class ContextTaskDecorator implements TaskDecorator {
+        @NonNull
+        @Override
+        public Runnable decorate(@NonNull Runnable runnable) {
+            // 先拿到主线程的上下文对象
+            RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+            return () -> {
+                try {
+                    // 在子线程中重新设置进去
+                    RequestContextHolder.setRequestAttributes(requestAttributes, true);
+                    runnable.run();
+                } finally {
+                    // 使用完成之后清除子线程中的上下文，避免内存泄露
+                    RequestContextHolder.resetRequestAttributes();
+                }
+            };
+        }
     }
 }
