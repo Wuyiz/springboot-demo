@@ -25,6 +25,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 @EnableAsync
 @Configuration
 public class AsyncConfiguration implements AsyncConfigurer {
+    public static final String ASYNC_THREAD_NAME_PREFIX = "async-worker-";
 
     @Bean
     public ThreadPoolTaskExecutor asyncDefaultExecutor() {
@@ -61,7 +62,7 @@ public class AsyncConfiguration implements AsyncConfigurer {
         executor.setTaskDecorator(new ContextTaskDecorator());
 
         // 自定义线程池每个线程的名称前缀
-        executor.setThreadNamePrefix("async-pool-");
+        executor.setThreadNamePrefix(ASYNC_THREAD_NAME_PREFIX);
 
         // initialize()方法不需要显式调用，可以直接创建ThreadPoolTaskExecutor实例，因为线程池在创建实例时已经自动初始化了。
         // initialize()方法的具体作用是执行一些初始化操作，例如创建线程池所需的队列等。
@@ -81,7 +82,7 @@ public class AsyncConfiguration implements AsyncConfigurer {
         executor.setQueueCapacity(200);
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         executor.setTaskDecorator(new ContextTaskDecorator());
-        executor.setThreadNamePrefix("async-pool-");
+        executor.setThreadNamePrefix(ASYNC_THREAD_NAME_PREFIX);
         return executor;
     }
 
@@ -106,12 +107,14 @@ public class AsyncConfiguration implements AsyncConfigurer {
         @NonNull
         @Override
         public Runnable decorate(@NonNull Runnable runnable) {
-            // 先拿到主线程的上下文对象
+            // 拿到主线程的上下文对象
             RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
             return () -> {
                 try {
-                    // 在子线程中重新设置进去
-                    RequestContextHolder.setRequestAttributes(requestAttributes, true);
+                    // 设置到子线程上下文中
+                    // 注意：上下文响应数据后，异步方法中继续使用request是错误的、不安全的做法；
+                    // 接口在响应数据后，由于request存在复用的机制，程序会将对其进行清理以便下次请求时使用，这将导致子线程中上下文的数据可能为null
+                    RequestContextHolder.setRequestAttributes(requestAttributes);
                     runnable.run();
                 } finally {
                     // 使用完成之后清除子线程中的上下文，避免内存泄露
