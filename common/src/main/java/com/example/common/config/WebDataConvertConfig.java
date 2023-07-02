@@ -11,6 +11,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import java.math.BigInteger;
 import java.util.List;
 
+/**
+ * spring mvc 全局配置类
+ *
+ * @author wuyiz
+ * @Date 2023-07-03
+ */
 @Deprecated
 // @EnableWebMvc
 // @Configuration

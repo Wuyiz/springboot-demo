@@ -20,6 +20,9 @@ import java.util.concurrent.ThreadPoolExecutor;
  * Async默认使用SimpleAsyncTaskExecutor作为线程工具，然而这个类每次都会新建一个线程执行任务，并非使用线程池。
  * 故此，我们需要自定义线程池bean，然后在使用注解时绑定线程池bean名称，eg：@Async(线程池beanName)；
  * 或者通过继承AsyncConfigurerSupport类（也可以实现AsyncConfigurer接口，都一样）对Async默认线程进行自定义
+ *
+ * @author wuyiz
+ * @Date 2023-07-03
  */
 @Slf4j
 @EnableAsync

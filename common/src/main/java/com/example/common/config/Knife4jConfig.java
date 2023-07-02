@@ -26,6 +26,12 @@ import java.net.UnknownHostException;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * knife4j 接口文档配置类
+ *
+ * @author wuyiz
+ * @Date 2023-07-03
+ */
 @Configuration
 public class Knife4jConfig {
     @Resource

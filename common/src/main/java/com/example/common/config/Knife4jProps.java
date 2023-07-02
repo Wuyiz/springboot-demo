@@ -4,6 +4,12 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+/**
+ * knife4j 自定义配置参数对象
+ *
+ * @author wuyiz
+ * @Date 2023-07-03
+ */
 @Data
 @Component
 @ConfigurationProperties(prefix = "knife4j-custom")

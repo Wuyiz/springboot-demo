@@ -2,7 +2,7 @@ package com.example.temp.controller;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONWriter;
-import com.example.common.result.Result;
+import com.example.common.result.ResponseResult;
 import com.example.temp.service.TestService;
 import lombok.Data;
 import lombok.SneakyThrows;
@@ -29,44 +29,44 @@ public class TestController {
     private TestService testService;
 
     @GetMapping("/async")
-    public Result<?> testAsync() {
+    public ResponseResult<?> testAsync() {
         testService.asyncMethod();
-        return Result.success();
+        return ResponseResult.success();
     }
 
     @SneakyThrows
     @GetMapping("/get")
-    public Result<?> testGet(@RequestParam Integer id) {
-        log.debug("testGet  输出： {}", id);
-        return Result.success();
+    public ResponseResult<?> testGet(Person person) {
+        log.debug("testGet  输出： {}", person);
+        return ResponseResult.success();
     }
 
     @SneakyThrows
-    @GetMapping("/person")
-    public Result<?> testPost(Person person) {
+    @PostMapping("/post")
+    public ResponseResult<?> testPost(Person person) {
         log.debug("testPost  输出：{}", person);
         System.out.println(Integer.lowestOneBit(3628800));
 
-        return Result.success();
+        return ResponseResult.success();
     }
 
 
     @GetMapping("/config")
-    public Result<?> testConfig() {
+    public ResponseResult<?> testConfig() {
         Map<String, Object> result = new HashMap<>();
         result.put("datetime", new Date());
         result.put("long", BigInteger.valueOf(143));
         result.put("null", null);
         log.debug("config  输出：{}", result);
-        return Result.success(result);
+        return ResponseResult.success(result);
     }
 
     @PostMapping("/callback")
-    public Result<?> testCallback(String eventId, String status, @RequestBody JSONObject msg) {
+    public ResponseResult<?> testCallback(String eventId, String status, @RequestBody JSONObject msg) {
         log.info("callback  输出：{}", msg.toJSONString(JSONWriter.Feature.PrettyFormat));
         log.info("callback  输出：{}", JSONObject.toJSONString(msg, JSONWriter.Feature.PrettyFormat));
         log.info("callback  输出：{}{}", eventId, status);
-        return Result.success();
+        return ResponseResult.success();
     }
 
     @Data

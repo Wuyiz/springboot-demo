@@ -1,7 +1,7 @@
 package com.example.common.handle;
 
 import cn.hutool.core.util.StrUtil;
-import com.example.common.result.Result;
+import com.example.common.result.ResponseResult;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.springframework.dao.DuplicateKeyException;
@@ -27,14 +27,20 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 全局异常处理类
+ *
+ * @author wuyiz
+ * @Date 2023-07-03
+ */
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionAdviceHandle {
 
     @ExceptionHandler({Exception.class})
-    public Result<String> exceptionHandler(HttpServletRequest request, Exception e) {
+    public ResponseResult<String> exceptionHandler(HttpServletRequest request, Exception e) {
         log.error(String.format("_UncaughtException %s ：", request.getRequestURI()), e);
-        return Result.error();
+        return ResponseResult.error();
     }
 
     /**
@@ -45,7 +51,7 @@ public class GlobalExceptionAdviceHandle {
      */
     @ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Result<String> methodArgumentNotValidErrorHandler(Exception e) {
+    public ResponseResult<String> methodArgumentNotValidErrorHandler(Exception e) {
         BindingResult bindingResult;
         if (e instanceof MethodArgumentNotValidException) {
             bindingResult = ((MethodArgumentNotValidException) e).getBindingResult();
@@ -57,13 +63,13 @@ public class GlobalExceptionAdviceHandle {
         for (ObjectError error : bindingResult.getAllErrors()) {
             if (error instanceof FieldError) {
                 fieldError = (FieldError) error;
-                errorArr.add(fieldError.getField() + fieldError.getDefaultMessage());
+                errorArr.add(fieldError.getDefaultMessage());
             } else {
                 errorArr.add(error.getDefaultMessage());
             }
             // break;  // 每次只展示一种校验错误
         }
-        return Result.error(StrUtil.join(";", errorArr));
+        return ResponseResult.error(StrUtil.join(";", errorArr));
     }
 
     /**
@@ -72,21 +78,21 @@ public class GlobalExceptionAdviceHandle {
      */
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Result<String> constraintViolationExceptionHandler(ConstraintViolationException e) {
+    public ResponseResult<String> constraintViolationExceptionHandler(ConstraintViolationException e) {
         List<String> errorArr = new ArrayList<>();
         for (ConstraintViolation<?> constraint : e.getConstraintViolations()) {
             PathImpl path = (PathImpl) constraint.getPropertyPath();
             errorArr.add(path.getLeafNode().getName() + constraint.getMessage());
             break;  // 每次只展示一种校验错误
         }
-        return Result.error("参数非法：" + StrUtil.join(";", errorArr));
+        return ResponseResult.error("参数非法：" + StrUtil.join(";", errorArr));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Result<String> httpMessageNotReadableExceptionHandler(HttpServletRequest request, HttpMessageNotReadableException e) {
+    public ResponseResult<String> httpMessageNotReadableExceptionHandler(HttpServletRequest request, HttpMessageNotReadableException e) {
         log.error("_HttpMessageNotReadableException {} ：{}", request.getRequestURI(), e.getMessage());
-        return Result.error("请求体格式不正确");
+        return ResponseResult.error("请求体格式不正确");
     }
 
     /**
@@ -94,40 +100,40 @@ public class GlobalExceptionAdviceHandle {
      */
     @ExceptionHandler(MissingServletRequestParameterException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Result<String> missingServletRequestParameterExceptionHandler(MissingServletRequestParameterException e) {
-        return Result.error(String.format("缺少必要参数%s", e.getParameterName()));
+    public ResponseResult<String> missingServletRequestParameterExceptionHandler(MissingServletRequestParameterException e) {
+        return ResponseResult.error(String.format("缺少必要参数%s", e.getParameterName()));
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Result<String> methodArgumentTypeMismatchExceptionHandler(MethodArgumentTypeMismatchException e) {
-        return Result.error(String.format("参数%s类型错误", e.getName()));
+    public ResponseResult<String> methodArgumentTypeMismatchExceptionHandler(MethodArgumentTypeMismatchException e) {
+        return ResponseResult.error(String.format("参数%s类型错误", e.getName()));
     }
 
     @ExceptionHandler(DuplicateKeyException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public Result<String> duplicateKeyExceptionHandler(HttpServletRequest request, DuplicateKeyException e) {
+    public ResponseResult<String> duplicateKeyExceptionHandler(HttpServletRequest request, DuplicateKeyException e) {
         log.error("_DuplicateKeyException {} ：{}", request.getRequestURI(), e.getMessage());
-        return Result.error("数据重复，请检查后提交");
+        return ResponseResult.error("数据重复，请检查后提交");
     }
 
     @ExceptionHandler(SQLException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Result<String> sqlExceptionHandler(HttpServletRequest request, DuplicateKeyException e) {
+    public ResponseResult<String> sqlExceptionHandler(HttpServletRequest request, DuplicateKeyException e) {
         log.error("_SQLException {} ：{}", request.getRequestURI(), e.getMessage());
-        return Result.error();
+        return ResponseResult.error();
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
-    public Result<String> httpRequestMethodNotSupportedExceptionHandle(HttpRequestMethodNotSupportedException e) {
-        return Result.error(e.getMessage());
+    public ResponseResult<String> httpRequestMethodNotSupportedExceptionHandle(HttpRequestMethodNotSupportedException e) {
+        return ResponseResult.error(e.getMessage());
     }
 
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     @ResponseStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
-    public Result<String> httpMediaTypeNotSupportedExceptionHandle(HttpMediaTypeNotSupportedException e) {
-        return Result.error(e.getMessage());
+    public ResponseResult<String> httpMediaTypeNotSupportedExceptionHandle(HttpMediaTypeNotSupportedException e) {
+        return ResponseResult.error(e.getMessage());
     }
 
 }
