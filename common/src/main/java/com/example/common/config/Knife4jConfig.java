@@ -1,5 +1,6 @@
 package com.example.common.config;
 
+import com.example.common.result.ResponseResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
@@ -23,6 +24,10 @@ import springfox.documentation.spring.web.plugins.Docket;
 import javax.annotation.Resource;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Date;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -42,6 +47,12 @@ public class Knife4jConfig {
         return new Docket(DocumentationType.SWAGGER_2)
                 .enable(knife4jProps.getEnable())
                 .apiInfo(apiInfo())
+                // 接口文档显示响应参数时，将ResponseEntity<MyModel>替换为MyModel
+                .genericModelSubstitutes(ResponseResult.class)
+                // 接口文档显示LocalTime格式时不是常规格式，这里做统一替换处理
+                .directModelSubstitute(LocalDate.class, Date.class)
+                .directModelSubstitute(LocalTime.class, Date.class)
+                .directModelSubstitute(LocalDateTime.class, Date.class)
                 // 分组名称
                 // .groupName("api分组名称")
                 .select()
