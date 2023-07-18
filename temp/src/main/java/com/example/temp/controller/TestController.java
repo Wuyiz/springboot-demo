@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONWriter;
 import com.example.common.result.ResponseResult;
 import com.example.temp.service.TestService;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,9 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.math.BigInteger;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +33,7 @@ public class TestController {
     private TestService testService;
 
     @GetMapping("/async")
-    public ResponseResult<?> testAsync() {
+    public ResponseResult<?> testAsync(@RequestParam LocalDate localDate) {
         testService.asyncMethod();
         return ResponseResult.success();
     }
@@ -43,11 +47,11 @@ public class TestController {
 
     @SneakyThrows
     @PostMapping("/post")
-    public ResponseResult<?> testPost(Person person) {
+    public ResponseResult<Person> testPost(@RequestBody Person person) {
         log.debug("testPost  输出：{}", person);
         System.out.println(Integer.lowestOneBit(3628800));
 
-        return ResponseResult.success();
+        return ResponseResult.success(person);
     }
 
 
@@ -73,6 +77,15 @@ public class TestController {
     static class Person {
         @NotBlank
         private String name;
+
+        @ApiModelProperty("localDate")
+        private LocalDate localDate;
+        @ApiModelProperty("localTime")
+        private LocalTime localTime;
+        @ApiModelProperty("localDateTime")
+        private LocalDateTime localDateTime;
+        @ApiModelProperty("date")
+        private Date date;
 
         @NotNull
         private Integer age;
