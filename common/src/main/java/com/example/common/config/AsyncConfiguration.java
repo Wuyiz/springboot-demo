@@ -20,6 +20,17 @@ import java.util.concurrent.ThreadPoolExecutor;
  * Async默认使用SimpleAsyncTaskExecutor作为线程工具，然而这个类每次都会新建一个线程执行任务，并非使用线程池。
  * 故此，我们需要自定义线程池bean，然后在使用注解时绑定线程池bean名称，eg：@Async(线程池beanName)；
  * 或者通过继承AsyncConfigurerSupport类（也可以实现AsyncConfigurer接口，都一样）对Async默认线程进行自定义
+ * <p>
+ * (1)、CPU密集型 CPU密集型也叫计算密集型，指的是系统的硬盘、内存性能相对CPU要好很多，此时，系统运作大部分的状况是CPU Loading 100%，CPU要读/写I/O(硬盘/内存)，I/O在很短的时间就可以完成，而CPU还有许多运算要处理，CPU Loading 很高。 在多重程序系统中，大部分时间用来做计算、逻辑判断等CPU动作的程序称之CPU bound。例如一个计算圆周率至小数点一千位以下的程序，在执行的过程当中绝大部分时间用在三角函数和开根号的计算，便是属于CPU bound的程序。 CPU bound的程序一般而言CPU占用率相当高。这可能是因为任务本身不太需要访问I/O设备，也可能是因为程序是多线程实现因此屏蔽掉了等待I/O的时间。
+ * <p>
+ * (2)、IO密集型 IO密集型指的是系统的CPU性能相对硬盘、内存要好很多，此时，系统运作，大部分的状况是CPU在等I/O (硬盘/内存) 的读/写操作，此时CPU Loading并不高。 I/O bound的程序一般在达到性能极限时，CPU占用率仍然较低。这可能是因为任务本身需要大量I/O操作，而pipeline做得不是很好，没有充分利用处理器能力。
+ * <p>
+ * (3)、先看下机器的CPU核数，然后在设定具体参数： 自己测一下自己机器的核数 System.out.println(Runtime.getRuntime().availableProcessors()); 即CPU核数 = Runtime.getRuntime().availableProcessors()
+ * <p>
+ * (4)、分析下线程池处理的程序是CPU密集型还是IO密集型 CPU密集型：corePoolSize = CPU核数 + 1 IO密集型：corePoolSize = CPU核数 * 2
+ * <hr/>
+ * 版权声明：本文为CSDN博主「time Friend」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+ * 原文链接：<a href="https://blog.csdn.net/tumu6889/article/details/125257712">线程池详解</a>
  *
  * @author wuyiz
  * @Date 2023-07-03
@@ -53,6 +64,10 @@ public class AsyncConfiguration implements AsyncConfigurer {
         executor.setQueueCapacity(2);
 
         // 当线程数已经达到maxPoolSize，且队列已满，会执行拒绝策略来处理新任务
+        // DiscardPolicy()：丢弃掉该任务但是不抛出异常，不推荐这种(导致使用者没觉察情况发生)
+        // DiscardOldestPolicy()：丢弃队列中等待最久的任务，然后把当前任务加入队列中。
+        // AbortPolicy()：丢弃任务并抛出 RejectedExecutionException 异常(线程池默认使用此策略)。
+        // CallerRunsPolicy()：队列达到最大任务数量，且创建的线程数已经是最大线程池数量时，新进来的任务既不会被抛弃也不会抛出异常，而是由主线程执行
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardPolicy());
 
         // 默认情况下，此执行器根本不会等待任务终止，它将立即关闭，中断正在进行的任务并清除剩余的任务队列
