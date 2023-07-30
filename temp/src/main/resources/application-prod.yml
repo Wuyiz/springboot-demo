@@ -1,4 +1,0 @@
-server:
-  port: 12580
-  servlet:
-    context-path: /prod-temp
