@@ -38,7 +38,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Slf4j
 @EnableAsync
 @Configuration
-public class AsyncConfiguration implements AsyncConfigurer {
+public class AsyncConfig implements AsyncConfigurer {
     public static final String ASYNC_THREAD_NAME_PREFIX = "async-worker-";
 
     @Bean

@@ -58,8 +58,11 @@ public class TestController {
     @GetMapping("/config")
     public ResponseResult<?> testConfig() {
         Map<String, Object> result = new HashMap<>();
-        result.put("datetime", new Date());
-        result.put("long", BigInteger.valueOf(143));
+        result.put("date", new Date());
+        result.put("localDate", LocalDate.now());
+        result.put("localTime", LocalTime.now());
+        result.put("localDateTime", LocalDateTime.now());
+        result.put("long.class", BigInteger.valueOf(9007199254740997583L));
         result.put("null", null);
         log.debug("config  输出：{}", result);
         return ResponseResult.success(result);
@@ -70,6 +73,12 @@ public class TestController {
         log.info("callback  输出：{}", msg.toJSONString(JSONWriter.Feature.PrettyFormat));
         log.info("callback  输出：{}", JSONObject.toJSONString(msg, JSONWriter.Feature.PrettyFormat));
         log.info("callback  输出：{}{}", eventId, status);
+        return ResponseResult.success();
+    }
+
+    @GetMapping("/testThreadLocalAndPool")
+    public ResponseResult<?> testThreadLocalAndPool() {
+        testService.testThreadLocalAndPool();
         return ResponseResult.success();
     }
 
