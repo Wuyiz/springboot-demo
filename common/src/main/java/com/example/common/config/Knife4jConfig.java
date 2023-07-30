@@ -39,13 +39,16 @@ import java.util.Optional;
  */
 @Configuration
 public class Knife4jConfig {
-    @Resource
-    private Knife4jProps knife4jProps;
+    private final Knife4jConfigProperties knife4jConfigProperties;
+
+    public Knife4jConfig(Knife4jConfigProperties knife4jConfigProperties) {
+        this.knife4jConfigProperties = knife4jConfigProperties;
+    }
 
     @Bean
     public Docket docketBean() {
         return new Docket(DocumentationType.SWAGGER_2)
-                .enable(knife4jProps.getEnable())
+                .enable(knife4jConfigProperties.getEnable())
                 .apiInfo(apiInfo())
                 // 接口文档显示响应参数时，将ResponseEntity<MyModel>替换为MyModel
                 .genericModelSubstitutes(ResponseResult.class)
@@ -58,16 +61,16 @@ public class Knife4jConfig {
                 .select()
                 // 指定Controller扫描包路径
                 // .apis(RequestHandlerSelectors.any())
-                .apis(RequestHandlerSelectors.basePackage(knife4jProps.getBasePackage()))
+                .apis(RequestHandlerSelectors.basePackage(knife4jConfigProperties.getBasePackage()))
                 .paths(PathSelectors.any())
                 .build();
     }
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title(knife4jProps.getTitle())
-                .version(knife4jProps.getVersion())
-                .description(knife4jProps.getDescription())
+                .title(knife4jConfigProperties.getTitle())
+                .version(knife4jConfigProperties.getVersion())
+                .description(knife4jConfigProperties.getDescription())
                 .termsOfServiceUrl("https://doc.xiaominfo.com/docs/quick-start")
                 .contact(new Contact("Wuyiz", "https://cnblogs.com/suhai", "wuyiz@foxmail.com"))
                 .build();
