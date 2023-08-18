@@ -22,7 +22,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 /**
- * LocalDateTime全局序列化配置
+ * Jackson全局序列化配置
  *
  * @author wuyiz
  * @Date 2023-05-05
@@ -52,6 +52,7 @@ public class JacksonConfig {
     public Jackson2ObjectMapperBuilderCustomizer jackson2ObjectMapperBuilderCustomizer() {
         return builder -> {
             configureJavaTimeSerializer(builder);
+            // todo 反序列化配置存在问题
             // configureJavaTimeDeserializer(builder);
             configureNumberTypeSerializer(builder);
         };
