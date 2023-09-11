@@ -1,7 +1,7 @@
 spring:
   kafka:
     # kafka-cluster
-    bootstrap-servers: 115.238.60.141:17798
+    bootstrap-servers: 127.0.0.1:9200
     producer:
       # retry times
       retries: 1

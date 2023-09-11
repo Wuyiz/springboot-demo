@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class KafkaConsumer {
 
-    @KafkaListener(topics = {"my-topic", "supconit"})
+    @KafkaListener(topics = {"my-topic", "my-test"})
     public void listener1(ConsumerRecord<Object, Object> record, Acknowledgment ack) {
         consumer(record, ack);
     }
