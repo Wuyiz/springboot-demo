@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.Lifecycle;
+import org.springframework.context.SmartLifecycle;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -29,29 +30,30 @@ import javax.annotation.PreDestroy;
 @Configuration
 public class BeanLifeConfig {
 
-    @Bean(initMethod = "customInit", destroyMethod = "stop")
-    BeanLifeCycleTest test1() {
+    @Bean(initMethod = "myStart", destroyMethod = "stop")
+    public BeanLifeCycleTest testLifeCycle() {
         return new BeanLifeCycleTest();
     }
 
+    @Bean
+    public BeanSmartLifeCycleTest testSmartLifeCycle() {
+        return new BeanSmartLifeCycleTest();
+    }
+
     @Slf4j
-    public static class BeanLifeCycleTest implements InitializingBean, DisposableBean, Lifecycle {
-        public void customInit() {
-            log.warn("customInit");
-        }
-
-        @PostConstruct
-        public void PostConstruct() {
-            log.warn("PostConstruct");
-        }
-
+    static class BeanLifeCycleTest implements InitializingBean, DisposableBean, Lifecycle {
         static {
             log.warn("static");
         }
 
         public BeanLifeCycleTest() {
-            super();
             log.warn("Construct");
+        }
+
+
+        @PostConstruct
+        public void PostConstruct() {
+            log.warn("PostConstruct");
         }
 
         @PreDestroy
@@ -59,13 +61,14 @@ public class BeanLifeConfig {
             log.warn("PreDestroy");
         }
 
-        public void customDestroy() {
-            log.warn("customDestroy");
-        }
-
         @Override
         public void afterPropertiesSet() throws Exception {
             log.warn("afterPropertiesSet");
+        }
+
+        @Override
+        public void destroy() throws Exception {
+            log.warn("destroy");
         }
 
         public void shutdown() {
@@ -76,24 +79,111 @@ public class BeanLifeConfig {
             log.warn("close");
         }
 
-        @Override
-        public void destroy() throws Exception {
-            log.warn("destroy");
+        public void myStart() {
+            log.warn("myStart");
+        }
+
+        public void myDestroy() {
+            log.warn("myDestroy");
         }
 
         @Override
         public void start() {
+            running = true;
             log.warn("start");
         }
 
         @Override
         public void stop() {
+            running = false;
             log.warn("stop");
         }
 
+        private boolean running = false;
+
         @Override
         public boolean isRunning() {
-            return false;
+            log.warn("isRunning {}", running);
+            return running;
+        }
+    }
+
+    @Slf4j
+    static class BeanSmartLifeCycleTest implements InitializingBean, DisposableBean, SmartLifecycle {
+        static {
+            log.warn("static");
+        }
+
+        public BeanSmartLifeCycleTest() {
+            log.warn("Construct");
+        }
+
+        @PostConstruct
+        public void PostConstruct() {
+            log.warn("PostConstruct");
+        }
+
+        @PreDestroy
+        public void PreDestroy() {
+            log.warn("PreDestroy");
+        }
+
+        @Override
+        public void afterPropertiesSet() throws Exception {
+            log.warn("afterPropertiesSet");
+        }
+
+        @Override
+        public void destroy() throws Exception {
+            log.warn("destroy");
+        }
+
+        public void shutdown() {
+            log.warn("shutdown");
+        }
+
+        public void close() {
+            log.warn("close");
+        }
+
+        public void myStart() {
+            log.warn("myStart");
+        }
+
+        public void myDestroy() {
+            log.warn("myDestroy");
+        }
+
+        @Override
+        public boolean isAutoStartup() {
+            return true;
+        }
+
+        @Override
+        public void stop(Runnable callback) {
+            log.warn("stop callback");
+            stop();
+            callback.run();
+        }
+
+        @Override
+        public void start() {
+            running = true;
+            log.warn("start");
+        }
+
+        @Override
+        public void stop() {
+            running = false;
+            log.warn("stop");
+        }
+
+        private volatile boolean running = false;
+
+        @Override
+        public boolean isRunning() {
+            log.warn("isRunning {}", running);
+            return running;
         }
     }
 }
