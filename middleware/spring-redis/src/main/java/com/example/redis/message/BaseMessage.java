@@ -4,10 +4,6 @@ import lombok.Data;
 
 import java.io.Serializable;
 
-/**
- * @author wuyizhang
- * @Date 2023-08-02
- */
 @Data
 public class BaseMessage implements Serializable {
     /**

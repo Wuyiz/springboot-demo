@@ -14,6 +14,11 @@ import java.time.Duration;
 
 /**
  * Redis Stream 工具类
+ * <p>
+ * 抽象了ObjectRecord的监听步骤并封装为方法，方便快速注册监听
+ *
+ * @author Suhai
+ * @Date 2023-10-10
  */
 @Slf4j
 public class RedisStreamUtils {
@@ -37,7 +42,10 @@ public class RedisStreamUtils {
     createContainerOptions(Class<NV> targetType) {
         return StreamMessageListenerContainer.StreamMessageListenerContainerOptions.builder()
                 .batchSize(5)
+                // 如果不指定自定义线程池，则会默认使用SimpleAsyncTaskExecutor线程池
+                // 此实现不会重用线程！ 请考虑使用线程池 TaskExecutor 实现，特别是用于执行大量短期任务
                 .executor(STREAM_TASK_SCHEDULER)
+                // 阻塞读取消息的轮询超时时长
                 .pollTimeout(Duration.ofSeconds(2))
                 .targetType(targetType)
                 .build();
@@ -48,11 +56,18 @@ public class RedisStreamUtils {
         return StreamMessageListenerContainer.StreamReadRequest
                 .builder(StreamOffset.create(streamKey, ReadOffset.lastConsumed()))
                 .consumer(Consumer.from(groupName, consumerName))
+                // 读取消息时自动ack
                 .autoAcknowledge(true)
+                // false：消息处理时如果抛异常，监听不会自动取消订阅
                 .cancelOnError(t -> false)
                 .build();
     }
 
+    /**
+     * redis stream 任务轮询线程池
+     *
+     * @return ThreadPoolTaskScheduler
+     */
     private static ThreadPoolTaskScheduler initRedisStreamTaskScheduler() {
         ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
         taskScheduler.setPoolSize(20);

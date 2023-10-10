@@ -6,16 +6,10 @@ import lombok.ToString;
 
 import java.time.LocalDateTime;
 
-/**
- * Flowable事件消息：流程结束（HISTORIC_PROCESS_INSTANCE_ENDED）
- *
- * @author wuyizhang
- * @Date 2023-07-27
- */
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class ProcessEndMessage extends BaseMessage {
+public class DemoMessage extends BaseMessage {
     /**
      * 发起时间
      */

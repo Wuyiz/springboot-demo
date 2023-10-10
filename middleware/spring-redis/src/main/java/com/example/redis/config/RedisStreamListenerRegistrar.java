@@ -1,7 +1,7 @@
 package com.example.redis.config;
 
-import com.example.redis.listener.ProcessMessageListener;
-import com.example.redis.message.ProcessEndMessage;
+import com.example.redis.listener.DemoListener;
+import com.example.redis.message.DemoMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -21,23 +21,19 @@ import java.util.Objects;
 @Slf4j
 @Component
 public class RedisStreamListenerRegistrar {
-    public static final String GROUP = "jz-event-group";
-    public static final String CONSUMER = "jz-event-consumer";
-    public static final String STREAM_WORKFLOW_TASK = "workflow:event:task";
-    public static final String STREAM_WORKFLOW_PROCESS = "workflow:event:process";
+    public static final String GROUP = "demo-group";
+    public static final String CONSUMER = "demo-consumer";
+    public static final String STREAM = "demo:testStream";
 
 
-    @Resource
+    @Resource(name = RedisConfig.BEAN_NAME_REDIS_STREAM_TEMPLATE)
     public RedisTemplate<String, Object> redisStreamTemplate;
-    @Resource
-    private ProcessMessageListener processMessageListener;
 
     @Bean(initMethod = "start")
-    public StreamMessageListenerContainer<String, ObjectRecord<String, ProcessEndMessage>> processEndListener(
-            RedisConnectionFactory factory) {
-        initializeStreamAndGroup(STREAM_WORKFLOW_PROCESS, GROUP);
-        return RedisStreamUtils.registerListenerContainer(factory, STREAM_WORKFLOW_PROCESS, GROUP, CONSUMER,
-                ProcessEndMessage.class, processMessageListener);
+    public StreamMessageListenerContainer<String, ObjectRecord<String, DemoMessage>> processEndListener(
+            RedisConnectionFactory factory, DemoListener listener) {
+        initializeStreamAndGroup(STREAM, GROUP);
+        return RedisStreamUtils.registerListenerContainer(factory, STREAM, GROUP, CONSUMER, DemoMessage.class, listener);
     }
 
     private void initializeStreamAndGroup(String streamKey, String groupName) {
