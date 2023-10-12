@@ -53,6 +53,9 @@ public class JacksonConfig {
         return builder -> {
             configureJavaTimeSerializer(builder);
             // todo 反序列化配置存在问题
+            // 已发现问题2：在feign调用时，如果远程接口响应参数的localDateTime格式与全局反序列化格式不一致时，会报反序列化异常
+            // 建议：反序列化时手动加@JsonFormat匹配传入的格式，避免反序列化失败
+            // 注意：@JsonFormat序列化和反序列化优先级高于自定义的全局配置，配置了此注解的localDateTime将会执行注解参数里的值进行序列化和反序列化
             // configureJavaTimeDeserializer(builder);
             configureNumberTypeSerializer(builder);
         };
