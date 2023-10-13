@@ -104,12 +104,20 @@ public class GlobalExceptionAdviceHandle {
         return ResponseResult.error(String.format("缺少必要参数%s", e.getParameterName()));
     }
 
+    /**
+     * MethodArgumentTypeMismatchException：参数类型转换不匹配异常
+     * <p>
+     * 例：传入String类型的日期格式，接口参数类型为Date，如果格式不匹配，无法转换类型时抛出此异常
+     */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseResult<String> methodArgumentTypeMismatchExceptionHandler(MethodArgumentTypeMismatchException e) {
         return ResponseResult.error(String.format("参数%s类型错误", e.getName()));
     }
 
+    /**
+     * DuplicateKeyException：数据库表存储时触发唯一索引冲突时，抛出此异常
+     */
     @ExceptionHandler(DuplicateKeyException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ResponseResult<String> duplicateKeyExceptionHandler(HttpServletRequest request, DuplicateKeyException e) {
@@ -117,6 +125,9 @@ public class GlobalExceptionAdviceHandle {
         return ResponseResult.error("数据重复，请检查后提交");
     }
 
+    /**
+     * SQLException：数据库访问错误或其他错误的信息的异常
+     */
     @ExceptionHandler(SQLException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseResult<String> sqlExceptionHandler(HttpServletRequest request, DuplicateKeyException e) {
@@ -124,12 +135,18 @@ public class GlobalExceptionAdviceHandle {
         return ResponseResult.error();
     }
 
+    /**
+     * HttpRequestMethodNotSupportedException：当请求处理程序不支持特定请求方法时引发的异常。
+     */
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
     public ResponseResult<String> httpRequestMethodNotSupportedExceptionHandle(HttpRequestMethodNotSupportedException e) {
         return ResponseResult.error(e.getMessage());
     }
 
+    /**
+     * HttpMediaTypeNotSupportedException：当前接口不支持请求内容的类型时抛出异常
+     */
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     @ResponseStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
     public ResponseResult<String> httpMediaTypeNotSupportedExceptionHandle(HttpMediaTypeNotSupportedException e) {
