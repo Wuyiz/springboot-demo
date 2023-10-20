@@ -7,11 +7,8 @@ package com.example.common.result;
  * @Date 2023-07-03
  */
 public enum RespCodeEnum {
-    SUCCESS(true, RespCodeConstants.SUCCESS_CODE, "成功"),
-
-    ERROR(false, RespCodeConstants.ERROR_CODE, "失败"),
-
-    ;
+    SUCCESS(true, 200, "成功"),
+    ERROR(false, 500, "失败");
 
     final boolean status;
     final int code;

@@ -15,6 +15,7 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -49,6 +50,7 @@ class SimpleTest {
 
     @Test
     void name() {
+        System.out.println(Objects.equals("app", "APP"));
         log.info("System::currentTimeMillis {}", System.currentTimeMillis());
         log.info("SystemClock::now {}", SystemClock.now());
     }

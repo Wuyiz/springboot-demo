@@ -25,9 +25,9 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
+@Validated
 @RestController
 @RequestMapping("/test")
-@Validated
 public class TestController {
     @Resource
     private TestService testService;

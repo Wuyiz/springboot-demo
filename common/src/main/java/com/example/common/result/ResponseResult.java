@@ -1,5 +1,8 @@
 package com.example.common.result;
 
+import lombok.Getter;
+import lombok.ToString;
+
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -9,6 +12,8 @@ import java.util.Objects;
  * @author wuyizhang
  * @Date 2023-07-03
  */
+@Getter
+@ToString
 public class ResponseResult<T> implements Serializable {
     private final Boolean status;
     private final Integer code;
@@ -84,26 +89,5 @@ public class ResponseResult<T> implements Serializable {
 
     public static <T> ResponseResult<T> error(Integer code, String message, T data) {
         return new ResponseResult<>(Boolean.FALSE, code, message, data);
-    }
-
-
-    public Integer getCode() {
-        return this.code;
-    }
-
-    public String getMessage() {
-        return this.message;
-    }
-
-    public T getData() {
-        return this.data;
-    }
-
-    public Boolean getStatus() {
-        return this.status;
-    }
-
-    public String toString() {
-        return "Result( code=" + this.getCode() + ", message=" + this.getMessage() + ", status=" + this.getStatus() + ", data=" + this.getData() + ")";
     }
 }
