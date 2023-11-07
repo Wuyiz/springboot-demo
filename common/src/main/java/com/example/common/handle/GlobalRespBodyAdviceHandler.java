@@ -11,6 +11,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
+import java.util.Objects;
+
 /**
  * 全局响应拦截类：统一响应结果类型
  *
@@ -25,7 +27,7 @@ public class GlobalRespBodyAdviceHandler implements ResponseBodyAdvice<Object> {
     @Override
     public boolean supports(@NonNull MethodParameter returnType,
                             @NonNull Class<? extends HttpMessageConverter<?>> converterType) {
-        return true;
+        return !Objects.equals(returnType.getParameterType(), ResponseResult.class);
     }
 
     /**
@@ -43,10 +45,6 @@ public class GlobalRespBodyAdviceHandler implements ResponseBodyAdvice<Object> {
                                   @NonNull Class<? extends HttpMessageConverter<?>> selectedConverterType,
                                   @NonNull ServerHttpRequest request,
                                   @NonNull ServerHttpResponse response) {
-        if (body instanceof ResponseResult) {
-            return body;
-        }
-
         return ResponseResult.success(body);
     }
 }
