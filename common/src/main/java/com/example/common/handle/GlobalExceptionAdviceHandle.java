@@ -1,6 +1,5 @@
 package com.example.common.handle;
 
-import cn.hutool.core.util.StrUtil;
 import com.example.common.result.ResponseResult;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.internal.engine.path.PathImpl;
@@ -24,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,13 +39,12 @@ public class GlobalExceptionAdviceHandle {
 
     @ExceptionHandler({Exception.class})
     public ResponseResult<String> exceptionHandler(HttpServletRequest request, Exception e) {
-        log.error(String.format("_UncaughtException %s ：", request.getRequestURI()), e);
+        log.error(MessageFormat.format("_UncaughtException {0} ：", request.getServletPath()), e);
         return ResponseResult.error();
     }
 
     /**
      * BindException：form-data、x-www-form-urlencoded方式绑定到Java Bean时，bean内属性校验失败，抛出该异常
-     * GET：url拼接、form-data
      * <p>
      * MethodArgumentNotValidException：基于json提交时，参数校验失败，抛出该异常
      */
@@ -68,15 +67,20 @@ public class GlobalExceptionAdviceHandle {
                 errorArr.add(error.getDefaultMessage());
             }
 
+
             // 只展示其中一种校验错误
             // break;
         }
-        return ResponseResult.error(StrUtil.join(";", errorArr));
+        return ResponseResult.error(String.join(";", errorArr));
     }
 
     /**
-     * ConstraintViolationException：凡是校验注解(@NotBlank .etc)放置在接口参数的，校验不通过时抛出此异常
-     * <p>注意：须在控制层添加@Validated，校验参数前添加@Valid注解，校验规则方能生效生效</>
+     * ConstraintViolationException：参数才方法上而不是对象内，且存在@Validated和@NotBlank等JSR-303注解时，校验失败则抛出此异常
+     * <p>
+     * 例：当控制层接口的方法参数不在自定义的对象内，而是直接在方法上时，校验不通过才会抛出此异常；<br>
+     * 例如，public void testApi(@RequestParam @NotBlank String name) {}
+     * <p>
+     * 注意：必须搭配@Validated注解，并且该注解需要在在控制层的类、或方法、或参数上，校验方能生效
      */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ConstraintViolationException.class)
@@ -87,48 +91,57 @@ public class GlobalExceptionAdviceHandle {
             errorArr.add(path.getLeafNode().getName() + constraint.getMessage());
             break;  // 每次只展示一种校验错误
         }
-        return ResponseResult.error("参数非法：" + StrUtil.join(";", errorArr));
+        return ResponseResult.error(String.join(";", errorArr));
     }
 
     /**
-     * HttpMessageNotReadableException：请求体的Json格式不正确导致读取异常
-     */
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseResult<String> httpMessageNotReadableExceptionHandler(HttpServletRequest request, HttpMessageNotReadableException e) {
-        log.error("_HttpMessageNotReadableException {} ：{}", request.getRequestURI(), e.getMessage());
-        return ResponseResult.error("请求体格式不正确");
-    }
-
-    /**
-     * MissingServletRequestParameterException：@RequestParam且require属性值为'true'，调用接口时必须传递参数名称，否则抛出此异常
+     * MissingServletRequestParameterException：请求接口时确实必传参数的名称，抛出此异常
+     * <p>
+     * 例：@RequestParam(require = true)下的参数，在请求接口时必须携带参数名称；<br>
+     * 例如，在请求路径"/api/test?id=&name"中，如果id和name两个参数的require=true时，则在请求时必须携带参数的名称，否则抛出此异常；<br>
+     * 如果参数的require=false（require默认值为true）或者没有添加@RequestParam注解时，则不会有这类问题
      */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseResult<String> missingServletRequestParameterExceptionHandler(MissingServletRequestParameterException e) {
-        return ResponseResult.error(String.format("缺少必要参数%s", e.getParameterName()));
+        return ResponseResult.error(MessageFormat.format("缺少必要参数{0}", e.getParameterName()));
     }
 
     /**
-     * MethodArgumentTypeMismatchException：解析控制器方法参数类型时不匹配，引发TypeMismatchException异常
+     * HttpMessageNotReadableException：请求体的Json格式不正确导致无法正常读取，抛出此异常
      * <p>
-     * 比如接收参数必须是数字整型，结果传入了其他字符导致类型不匹配；<br>
-     * 或者传入String类型的日期格式，接口参数为Date、LocalDateTime等日期对象，此时如果传入的日期格式和框架反序列化工具配置的格式不匹配也会报此错误
+     * 例：请求体的Json格式不符合规范
+     */
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseResult<String> httpMessageNotReadableExceptionHandler(HttpServletRequest request, HttpMessageNotReadableException e) {
+        log.error("_HttpMessageNotReadableException {} ：{}", request.getServletPath(), e.getMessage());
+        return ResponseResult.error("请求体格式不正确");
+    }
+
+    /**
+     * MethodArgumentTypeMismatchException：在解析请求方法的参数类型时，没有匹配到合适的转换器，抛出此异常
+     * <p>
+     * 例：比如接收参数必须是数字整型，结果传入了英文字符，导致无法正确转换；<br>
+     * 再或者，接口参数为Date、LocalDateTime等日期对象，此时传入的日期格式和框架反序列化配置的格式不一致时，也会引发此异常
+     * <p>
+     * 注意：当控制层接口的方法参数在自定义的对象内时，该异常不会被抛出，<br>
+     * 而是由BindException和MethodArgumentNotValidException取而代之
      */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseResult<String> methodArgumentTypeMismatchExceptionHandler(MethodArgumentTypeMismatchException e) {
-        return ResponseResult.error(String.format("参数%s类型不匹配", e.getName()));
+        return ResponseResult.error(MessageFormat.format("{0}的请求类型或格式不正确", e.getName()));
     }
 
     /**
-     * DuplicateKeyException：数据库表存储时触发唯一索引冲突时，抛出此异常
+     * DuplicateKeyException：当尝试插入或更新数据导致违反主键或唯一约束时引发异常，抛出此异常
      */
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(DuplicateKeyException.class)
     public ResponseResult<String> duplicateKeyExceptionHandler(HttpServletRequest request, DuplicateKeyException e) {
-        log.error("_DuplicateKeyException {} ：{}", request.getRequestURI(), e.getMessage());
-        return ResponseResult.error("数据重复，请检查后提交");
+        log.error("_DuplicateKeyException {} ：{}", request.getServletPath(), e.getMessage());
+        return ResponseResult.error("请求资源冲突，请检查后提交");
     }
 
     /**
@@ -137,21 +150,25 @@ public class GlobalExceptionAdviceHandle {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(SQLException.class)
     public ResponseResult<String> sqlExceptionHandler(HttpServletRequest request, DuplicateKeyException e) {
-        log.error("_SQLException {} ：{}", request.getRequestURI(), e.getMessage());
+        log.error("_SQLException {} ：{}", request.getServletPath(), e.getMessage());
         return ResponseResult.error();
     }
 
     /**
      * HttpRequestMethodNotSupportedException：当请求处理程序不支持特定请求方法时引发的异常。
+     * <p>
+     * 例：接口是post请求，请求时却使用的是get请求，抛出此异常
      */
     @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseResult<String> httpRequestMethodNotSupportedExceptionHandle(HttpRequestMethodNotSupportedException e) {
-        return ResponseResult.error(e.getMessage());
+        return ResponseResult.error(MessageFormat.format("请求方法{0}不支持", e.getMethod()));
     }
 
     /**
      * HttpMediaTypeNotSupportedException：当前接口不支持请求内容的类型时抛出异常
+     * <p>
+     * 例：
      */
     @ResponseStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
