@@ -15,8 +15,8 @@ import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
 /**
- * @author wuyiz
- * @Date 2023-05-10
+ * @author suhai
+ * @since 2023-05-10
  */
 public class ReadPropertiesTest {
 

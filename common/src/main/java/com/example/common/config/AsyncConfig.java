@@ -32,8 +32,8 @@ import java.util.concurrent.ThreadPoolExecutor;
  * 版权声明：本文为CSDN博主「time Friend」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
  * 原文链接：<a href="https://blog.csdn.net/tumu6889/article/details/125257712">线程池详解</a>
  *
- * @author wuyiz
- * @Date 2023-07-03
+ * @author suhai
+ * @since 2023-07-03
  */
 @Slf4j
 @EnableAsync

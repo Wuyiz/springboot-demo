@@ -17,8 +17,8 @@ import java.time.Duration;
  * <p>
  * 抽象了ObjectRecord的监听步骤并封装为方法，方便快速注册监听
  *
- * @author Suhai
- * @Date 2023-10-10
+ * @author suhai
+ * @since 2023-10-10
  */
 @Slf4j
 public class RedisStreamUtils {

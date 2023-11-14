@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 /**
  * knife4j 自定义配置属性对象
  *
- * @author wuyiz
- * @Date 2023-07-03
+ * @author suhai
+ * @since 2023-07-03
  */
 @Data
 @Component

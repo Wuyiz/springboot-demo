@@ -30,8 +30,8 @@ import java.util.List;
 /**
  * 全局异常处理类
  *
- * @author wuyiz
- * @Date 2023-07-03
+ * @author suhai
+ * @since 2023-07-03
  */
 @Slf4j
 @RestControllerAdvice

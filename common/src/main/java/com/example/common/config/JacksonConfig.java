@@ -24,8 +24,8 @@ import java.time.format.DateTimeFormatter;
 /**
  * Jackson全局序列化配置
  *
- * @author wuyiz
- * @Date 2023-05-05
+ * @author suhai
+ * @since 2023-05-05
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Jackson2ObjectMapperBuilder.class)

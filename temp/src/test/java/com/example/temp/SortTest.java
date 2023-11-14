@@ -10,9 +10,8 @@ import java.util.stream.IntStream;
 /**
  * TODO
  *
- * @author wyz
- * @version 1.0.0 v
- * @date 2022-03-17 13:45
+ * @author suhai
+ * @since 2022-03-17 13:45
  */
 class SortTest {
     @Data

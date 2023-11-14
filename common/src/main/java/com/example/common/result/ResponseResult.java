@@ -9,8 +9,8 @@ import java.util.Objects;
 /**
  * 请求响应结果集封装类
  *
- * @author wuyizhang
- * @Date 2023-07-03
+ * @author suhai
+ * @since 2023-07-03
  */
 @Getter
 @ToString

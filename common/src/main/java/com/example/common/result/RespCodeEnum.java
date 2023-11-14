@@ -3,8 +3,8 @@ package com.example.common.result;
 /**
  * 响应码枚举类
  *
- * @author wuyizhang
- * @Date 2023-07-03
+ * @author suhai
+ * @since 2023-07-03
  */
 public enum RespCodeEnum {
     SUCCESS(true, 200, "成功"),

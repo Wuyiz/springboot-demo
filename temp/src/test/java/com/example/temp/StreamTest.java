@@ -7,9 +7,8 @@ import static java.util.stream.IntStream.range;
 /**
  * TODO
  *
- * @author wyz
- * @version 1.0.0 v
- * @date 2021-06-02 10:13
+ * @author suhai
+ * @since 2021-06-02 10:13
  */
 public class StreamTest {
 

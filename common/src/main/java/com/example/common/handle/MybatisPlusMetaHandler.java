@@ -10,8 +10,8 @@ import java.util.Date;
 /**
  * mybatis-plus填充器，实现公共字段自动写入
  *
- * @author wuyiz
- * @Date 2023-07-03
+ * @author suhai
+ * @since 2023-07-03
  */
 @Component
 public class MybatisPlusMetaHandler implements MetaObjectHandler {

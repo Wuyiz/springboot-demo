@@ -19,8 +19,8 @@ import java.util.Objects;
  * <p>
  * 注意：ControllerAdvice需要配置basePackages限定响应的拦截范围（避免swagger等其他依赖的接口响应数据也被拦截，导致接口文档加载异常）
  *
- * @author Suhai
- * @Date 2023-10-13
+ * @author suhai
+ * @since 2023-10-13
  */
 @RestControllerAdvice(basePackages = {BaseConstants.PROJECT_BASE_PATH})
 public class GlobalRespBodyAdviceHandler implements ResponseBodyAdvice<Object> {

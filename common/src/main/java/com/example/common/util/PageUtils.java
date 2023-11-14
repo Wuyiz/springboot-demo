@@ -3,8 +3,8 @@ package com.example.common.util;
 /**
  * 分页工具类
  *
- * @author wuyizhang
- * @Date 2023-04-20
+ * @author suhai
+ * @since 2023-04-20
  */
 public class PageUtils {
     // 首页页码
