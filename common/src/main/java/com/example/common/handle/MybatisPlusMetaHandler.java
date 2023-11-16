@@ -18,12 +18,12 @@ public class MybatisPlusMetaHandler implements MetaObjectHandler {
 
     @Override
     public void insertFill(MetaObject metaObject) {
-        setValue(metaObject, new Date(), "createTime", "insertUpdateTime");
+        setValue(metaObject, new Date(), "createdTime");
     }
 
     @Override
     public void updateFill(MetaObject metaObject) {
-        setValue(metaObject, new Date(), "updateTime", "insertUpdateTime");
+        setValue(metaObject, new Date(), "updatedTime");
     }
 
     private void setValue(MetaObject metaObject, Object value, String... fieldNames) {
