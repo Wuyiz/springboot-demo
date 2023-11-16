@@ -1,6 +1,6 @@
 package com.example.common.handle;
 
-import com.example.common.result.ResponseResult;
+import com.example.common.domain.ResponseResult;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.springframework.dao.DuplicateKeyException;
@@ -29,12 +29,17 @@ import java.util.List;
 
 /**
  * 全局异常处理类
+ * <p>
+ * 1.统一将异常请求的HTTP状态设置为OK_200，前端根据接口的响应数据处理业务，而不是根据HTTP状态处理<br/>
+ * 2.这样做的好处是，可以在系统发生大面积异常时，前端页面的错误提示的数量和内容可控<br/>
+ * 3.前端不应该直接展示接口异常提示，而是有选择性的根据响应码展示<br/>
  *
  * @author suhai
  * @since 2023-07-03
  */
 @Slf4j
 @RestControllerAdvice
+@ResponseStatus(HttpStatus.OK)
 public class GlobalExceptionAdviceHandle {
 
     @ExceptionHandler({Exception.class})

@@ -1,6 +1,6 @@
 package com.example.common.config;
 
-import com.example.common.result.ResponseResult;
+import com.example.common.domain.ResponseResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;

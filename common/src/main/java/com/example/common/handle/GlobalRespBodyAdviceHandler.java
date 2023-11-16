@@ -1,7 +1,7 @@
 package com.example.common.handle;
 
 import com.example.common.contant.BaseConstants;
-import com.example.common.result.ResponseResult;
+import com.example.common.domain.ResponseResult;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
