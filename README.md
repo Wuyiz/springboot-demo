@@ -25,17 +25,18 @@
 6. 如果要记录时区信息，应该使用timestamp类型，而不是datetime类型
 7. 创建时间和更新时间字段的精度设置为3|6位，针对同一秒插入的数据也可以正确排序
 8. 索引命名方式：普通索引用idx_，唯一约束用uk_，主键约束用pk_
+9. 涉及表的状态字段时，如果字段是tinyint等数字类型，不需要设置成无符号，因为状态值可以存在负值
 
 ```sql
 CREATE TABLE `table_name`
 (
-    `id`           bigint unsigned NOT NULL COMMENT '主键ID',
-    `is_deleted`   tinyint unsigned                                              DEFAULT '0' COMMENT '逻辑删除（0：未删除；1：已删除）',
-    `created_by`   varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '创建人',
-    `created_time` datetime(3)                                                   DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
-    `updated_by`   varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '更新人',
-    `updated_time` datetime(3)                                                   DEFAULT NULL COMMENT '更新时间',
-    PRIMARY KEY (`id`)
+  `id`           bigint unsigned NOT NULL COMMENT '主键ID',
+  `is_deleted`   tinyint                                                       DEFAULT '0' COMMENT '逻辑删除（0：未删除；1：已删除）',
+  `created_by`   varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '创建人',
+  `created_time` datetime(3)                                                   DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
+  `updated_by`   varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '更新人',
+  `updated_time` datetime(3)                                                   DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
