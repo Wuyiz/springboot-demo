@@ -15,28 +15,95 @@
 - maven使用-P指定环境打包
     - `mvn clean package -Dmaven.test.skip=true -P prod -f pom.xml`
 
-### 数据库约束
+### 数据库基础字段以及规约
 
-1. id varchar长度统一设置为50，如果为数字，统一为无符号为的bigint类型
-2. name简短统一30
-3. description等短文本，统一为varchar类型，默认255长度
-4. text等长文本，统一为varchar类型，默认500~2000长度
-5. 超过50000长度，使用text、longtext等文本类型（如果表数据量预计将来增长较大时，新开表存储文本，避免影响查询效率）
-6. 如果要记录时区信息，datetime类型应该设置为timestamp
+1. id如果是varchar，长度统一设置为50；如果为数字，统一为无符号的bigint类型
+2. name、code等varchar类型，长度统一为100
+3. introduction、remarks等短文本字段，统一为varchar类型，默认500~1000长度
+4. description等长文本字段，统一为varchar类型，默认2000~4000长度
+5. 超过5000长度，使用text、longtext等文本类型（如果表数据量预计将来增长较大时，新开表存储文本，避免影响查询效率）
+6. 如果要记录时区信息，应该使用timestamp类型，而不是datetime类型
+7. 创建时间和更新时间字段的精度设置为3|6位，针对同一秒插入的数据也可以正确排序
+8. 索引命名方式：普通索引用idx_，唯一约束用uk_，主键约束用pk_
 
 ```sql
 CREATE TABLE `table_name`
 (
-    `id`          bigint unsigned NOT NULL COMMENT '主键id',
---    `id`          VARCHAR(50)     NOT NULL COMMENT '主键ID',
-    `is_deleted`  int             NOT NULL DEFAULT '0' COMMENT '逻辑删除（0：未删除；1：已删除）',
-    `creator_id`  int                      DEFAULT NULL COMMENT '创建人',
-    `create_time` datetime                 DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `updater_id`  int                      DEFAULT NULL COMMENT '更新人',
-    `update_time` datetime                 DEFAULT NULL COMMENT '更新时间',
---    `update_time` datetime        DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    `id`           bigint unsigned NOT NULL COMMENT '主键ID',
+    `is_deleted`   tinyint unsigned                                              DEFAULT '0' COMMENT '逻辑删除（0：未删除；1：已删除）',
+    `created_by`   varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '创建人',
+    `created_time` datetime(3)                                                   DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
+    `updated_by`   varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '更新人',
+    `updated_time` datetime(3)                                                   DEFAULT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
+```
+
+```java
+import java.io.Serializable;
+
+@Data
+@TableName(value = "table_name")
+public class TableName implements Serializable {
+    @TableId(type = IdType.ASSIGN_ID)
+    private BigInteger id;
+
+    @TableLogic
+    private Boolean isDeleted;
+
+    @TableField(fill = FieldFill.INSERT)
+    private String createdBy;
+
+    @TableField(fill = FieldFill.INSERT)
+    private LocalDateTime createdTime;
+
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+    private String updatedBy;
+
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+    private LocalDateTime updatedTime;
+
+    @Version
+    private static final long serialVersionUID = 1L;
+}
+```
+
+```yaml
+# spring-log配置
+logging:
+  config: classpath:log4j2.xml
+  file:
+    # name是指日志路径+日志文件名称
+    name: ${logging.file.path}/${spring.application.name}.log
+    # path是日志路径
+    path: /home/api/log/${spring.application.name}
+
+# spring-admin监控配置
+management:
+  info:
+    defaults:
+      enabled: true
+  endpoint:
+    health:
+      show-details: ALWAYS
+    logfile:
+      # SpringAdmin显示日志
+      external-file: ${logging.file.name}
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+# mybatis-plus配置
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+  mapper-locations: classpath*:mapper/**/*Mapper.xml
 ```
