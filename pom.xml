@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <packaging>pom</packaging>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.3.12.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
+    <modelVersion>4.0.0</modelVersion>
 
     <modules>
+        <module>demo-common</module>
         <module>temp</module>
-        <module>common</module>
         <module>middleware</module>
     </modules>
 
+    <packaging>pom</packaging>
     <groupId>com.example</groupId>
     <artifactId>springboot-demo</artifactId>
     <version>0.0.1-SNAPSHOT</version>
@@ -29,84 +29,67 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <!--指定项目编码环境-->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <!--依赖版本号-->
         <hutool.version>5.8.21</hutool.version>
-        <fastjson2.version>2.0.28</fastjson2.version>
+        <fastjson2.version>2.0.42</fastjson2.version>
+        <knife4j.version>3.0.3</knife4j.version>
+        <mybatis-plus.version>3.5.3.1</mybatis-plus.version>
     </properties>
-
-    <dependencies>
-        <!-- springboot -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-configuration-processor</artifactId>
-            <optional>true</optional>
-            <!--<scope>provided</scope>-->
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- commons -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <!--provided：只在编译和测试阶段起作用，打包时排除依赖，同时没有传递性-->
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.alibaba.fastjson2</groupId>
-            <artifactId>fastjson2</artifactId>
-            <version>${fastjson2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.alibaba.fastjson2</groupId>
-            <artifactId>fastjson2-extension</artifactId>
-            <version>${fastjson2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.alibaba.fastjson2</groupId>
-            <artifactId>fastjson2-extension-spring5</artifactId>
-            <version>${fastjson2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>cn.hutool</groupId>
-            <artifactId>hutool-all</artifactId>
-            <!--hutool-bom中没有hutool-all依赖包，这里需要指定版本-->
-            <version>${hutool.version}</version>
-        </dependency>
-
-        <!--junit测试中不要使用Thread.sleep()方法，在测试运行时线程并不会正常阻塞，请使用异步工具类阻塞方法，而非线程-->
-        <dependency>
-            <groupId>org.awaitility</groupId>
-            <artifactId>awaitility</artifactId>
-            <version>4.2.0</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>com.example</groupId>
-                <artifactId>common</artifactId>
+                <artifactId>demo-common</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus</artifactId>
+                <version>${mybatis-plus.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-core</artifactId>
+                <version>${mybatis-plus.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-extension</artifactId>
+                <version>${mybatis-plus.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>${mybatis-plus.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba.fastjson2</groupId>
+                <artifactId>fastjson2</artifactId>
+                <version>${fastjson2.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+            </dependency>
+
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <!--hutool-bom中不包含hutool-all的依赖坐标，需要指定版本-->
+                <version>${hutool.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.github.xiaoymin</groupId>
                 <artifactId>knife4j-dependencies</artifactId>
-                <version>3.0.3</version>
+                <version>${knife4j.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -163,16 +146,6 @@
     </profiles>
 
     <build>
-        <resources>
-            <!--资源目录resources中的文件如果要引用pom中定义的属性，需要在resources插件增加如下配置-->
-            <!--其实spring-boot-starter-parent父依赖已经帮我们增加了yml、yaml和properties文件的相关配置-->
-            <resource>
-                <directory>src/main/resources</directory>
-                <!--[Maven中profile和filtering实现多个环境下的属性过滤]https://www.cnblogs.com/atai/p/6933966.html-->
-                <!--filtering设置为true，表示让资源目录中引用pom定义的属性，解决找不到@profile.name@-->
-                <filtering>true</filtering>
-            </resource>
-        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -185,25 +158,46 @@
                 </configuration>
             </plugin>
             <plugin>
+                <!--[Maven中profile和filtering实现多个环境下的属性过滤]https://www.cnblogs.com/atai/p/6933966.html-->
+                <!--maven的获取属性使用占位符${}，默认只能在pom文件范围内使用-->
+                <!--如果想在springboot的yml或properties中使用maven的占位符以获取pom文件的参数，就不能用${}，因为可能会与EL表达式冲突-->
+                <!--解决办法：在resource标签里设置filtering为true，指定资源目录directory以及includes-->
+                <!--        修改maven-resources-plugin插件的delimiter符号，并将useDefaultDelimiters设置为false-->
+                <!--但其实spring-boot-starter-parent已经帮我们做了这些工作，我们只需要在pom文件上继承依赖，同时引入maven-resources-plugin插件即可-->
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <!-- 打包时跳过单元测试 -->
-                    <skipTests>true</skipTests>
-                </configuration>
+                <artifactId>maven-resources-plugin</artifactId>
             </plugin>
         </plugins>
 
         <pluginManagement>
             <plugins>
                 <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <configuration>
+                        <!--打包时跳过单元测试-->
+                        <skipTests>true</skipTests>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <!--spring-boot-maven-plugin插件：-->
+                    <!--1.spring-boot-maven-plugin插件提供对springboot maven的打包支持-->
+                    <!--2.pom如果继承了spring-boot-starter-parent，则只需要在当前pom文件中引入spring-boot-maven-plugin插件即可-->
+                    <!--3.pom如果继承了spring-boot-starter-parent，则应该避免在没有启动类的模块（既被依赖的模块）中引入此插件，否则由于repackage参数的存在，会报错'Unable to find main class'-->
+                    <!--4.插件的repackage参数表示项目在对springboot maven打包时生成一个可执行的包-->
+                    <!--repackage参数：-->
+                    <!--1.spring-boot-starter-parent中已经默认开启了repackage参数，pom如果继承starter-parent，只需要引入插件即可在打包时生成可执行包-->
+                    <!--2.插件开启repackage参数，打包生成的是可执行包（MANIFEST.MF有启动类），不可以当作依赖引入-->
+                    <!--3.插件未开启repackage参数，打包生成的是依赖包（MANIFEST.MF中没有启动类），可以当作依赖引入，但不可执行-->
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
                     <configuration>
                         <excludes>
-                            <!-- 注意：在使用spring-boot-maven-plugin插件进行打包时，
-                                 pom文件中定义了[scope=provided]的依赖包仍然会在repackage时重新打入包中，
-                                 如有需要，请在此插件配置中再次排除对应依赖的坐标 -->
+                            <!--springboot项目默认构建jar包或war包的命令为repackage，作用于maven生命周期的package阶段-->
+                            <!--默认情况下，mvn package命令执行后，会再次执行repackage命令，二次打包并生成可执行的包-->
+                            <!--repackage在打jar包时，会生成可执行jar包，同时将mvn package生成的*.jar包重命名为*.jar.origin-->
+                            <!--但是repackage过程会将工程中引入的任何依赖都打入包内，包括坐标上声明了scope=provided的依赖-->
+                            <!--所以需要在springboot maven插件中手动排除scope=provided的依赖，比如 lombok、mybatis-plus等-->
                             <exclude>
                                 <groupId>org.projectlombok</groupId>
                                 <artifactId>lombok</artifactId>
@@ -214,19 +208,6 @@
                             </exclude>
                         </excludes>
                     </configuration>
-                    <!--<executions>
-                        <execution>
-                            &lt;!&ndash;ps：如果pom已经继承了spring-boot-starter-parent，则无需增加goals=repackage参数，因为parent中已包含此参数&ndash;&gt;
-                            <goals>
-                                &lt;!&ndash;goal标签的repackage作用：
-                                    1：pom中加入repackage打的是可执行的包，MANIFEST.MF有启动类，但是可执行的包不能作为依赖引入，引入这样的jar会报错找不到类。
-                                    2：pom中不加repackage打的是依赖包，不可执行，MANIFEST.MF中没有启动类，但是可以当作依赖jar包引入其他项目中。
-                                    3：打包插件版本应该和springboot版本一致，否则会报版本报错。如果子模块有引入其他模块。直接子模块打包会报错找不到这个依赖（因为会从仓库里去找），需要整个项目一起打包，才能打成功。
-                                &ndash;&gt;
-                                <goal>repackage</goal>
-                            </goals>
-                        </execution>
-                    </executions>-->
                 </plugin>
             </plugins>
         </pluginManagement>
