@@ -1,4 +1,4 @@
-package com.example.common.handle;
+package com.example.common.support;
 
 import com.example.common.contant.BaseConstants;
 import com.example.common.domain.ResponseResult;
@@ -17,7 +17,7 @@ import java.util.Objects;
  * 全局响应拦截类：统一响应结果类型
  *
  * <p>
- * 注意：ControllerAdvice需要配置basePackages限定响应的拦截范围（避免swagger等其他依赖的接口响应数据也被拦截，导致接口文档加载异常）
+ * 注意：ControllerAdvice需要配置basePackages限定响应的拦截范围（避免swagger等其他依赖库的接口响应数据也被拦截）
  *
  * @author suhai
  * @since 2023-10-13

@@ -1,11 +1,15 @@
-package com.example.common.handle;
+package com.example.common.support;
 
 import com.example.common.domain.ResponseResult;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.internal.engine.path.PathImpl;
-import org.springframework.dao.DuplicateKeyException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -18,8 +22,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.yaml.snakeyaml.constructor.DuplicateKeyException;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.sql.SQLException;
@@ -35,16 +41,16 @@ import java.util.List;
  * 3.前端不应该直接展示接口异常提示，而是有选择性的根据响应码展示<br/>
  *
  * @author suhai
+ * @see org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
  * @since 2023-07-03
  */
 @Slf4j
 @RestControllerAdvice
 @ResponseStatus(HttpStatus.OK)
 public class GlobalExceptionAdviceHandle {
-
     @ExceptionHandler({Exception.class})
-    public ResponseResult<String> exceptionHandler(HttpServletRequest request, Exception e) {
-        log.error(MessageFormat.format("_UncaughtException {0} ：", request.getServletPath()), e);
+    public ResponseResult<String> uncaughtExceptionHandler(HttpServletRequest request, Exception e) {
+        log.error(MessageFormat.format("_UncaughtException {0} ：", request.getRequestURI()), e);
         return ResponseResult.error();
     }
 
@@ -55,7 +61,7 @@ public class GlobalExceptionAdviceHandle {
      */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({BindException.class, MethodArgumentNotValidException.class})
-    public ResponseResult<String> methodArgumentNotValidErrorHandler(Exception e) {
+    public final ResponseResult<String> methodArgumentNotValidErrorHandler(Exception e) {
         BindingResult bindingResult;
         if (e instanceof MethodArgumentNotValidException) {
             bindingResult = ((MethodArgumentNotValidException) e).getBindingResult();
@@ -71,10 +77,8 @@ public class GlobalExceptionAdviceHandle {
             } else {
                 errorArr.add(error.getDefaultMessage());
             }
-
-
             // 只展示其中一种校验错误
-            // break;
+            break;
         }
         return ResponseResult.error(String.join(";", errorArr));
     }
@@ -140,16 +144,6 @@ public class GlobalExceptionAdviceHandle {
     }
 
     /**
-     * DuplicateKeyException：当尝试插入或更新数据导致违反主键或唯一约束时引发异常，抛出此异常
-     */
-    @ResponseStatus(HttpStatus.CONFLICT)
-    @ExceptionHandler(DuplicateKeyException.class)
-    public ResponseResult<String> duplicateKeyExceptionHandler(HttpServletRequest request, DuplicateKeyException e) {
-        log.error("_DuplicateKeyException {} ：{}", request.getServletPath(), e.getMessage());
-        return ResponseResult.error("请求资源冲突，请检查后提交");
-    }
-
-    /**
      * SQLException：数据库访问错误或其他错误的信息的异常
      */
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -166,7 +160,11 @@ public class GlobalExceptionAdviceHandle {
      */
     @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseResult<String> httpRequestMethodNotSupportedExceptionHandle(HttpRequestMethodNotSupportedException e) {
+    public ResponseResult<String> httpRequestMethodNotSupportedExceptionHandle(HttpServletResponse response, HttpRequestMethodNotSupportedException e) {
+        String[] supportedMethods = e.getSupportedMethods();
+        if (!ObjectUtils.isEmpty(supportedMethods)) {
+            response.addHeader(HttpHeaders.ALLOW, StringUtils.arrayToCommaDelimitedString(supportedMethods));
+        }
         return ResponseResult.error(MessageFormat.format("请求方法{0}不支持", e.getMethod()));
     }
 
@@ -177,7 +175,11 @@ public class GlobalExceptionAdviceHandle {
      */
     @ResponseStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
-    public ResponseResult<String> httpMediaTypeNotSupportedExceptionHandle(HttpMediaTypeNotSupportedException e) {
+    public ResponseResult<String> httpMediaTypeNotSupportedExceptionHandle(HttpServletResponse response, HttpMediaTypeNotSupportedException e) {
+        List<MediaType> mediaTypes = e.getSupportedMediaTypes();
+        if (!CollectionUtils.isEmpty(mediaTypes)) {
+            response.setHeader(HttpHeaders.ACCEPT, MediaType.toString(mediaTypes));
+        }
         return ResponseResult.error(e.getMessage());
     }
 
