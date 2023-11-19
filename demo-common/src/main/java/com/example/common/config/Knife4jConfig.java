@@ -1,6 +1,5 @@
 package com.example.common.config;
 
-import com.example.common.domain.ResponseResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
@@ -51,7 +50,7 @@ public class Knife4jConfig {
                 .enable(knife4jConfigProperties.getEnable())
                 .apiInfo(apiInfo())
                 // 接口文档显示响应参数时，将ResponseEntity<MyModel>替换为MyModel
-                .genericModelSubstitutes(ResponseResult.class)
+                // .genericModelSubstitutes(ResponseResult.class)
                 // 接口文档显示LocalTime格式时不是常规格式，这里做统一替换处理
                 .directModelSubstitute(LocalDate.class, Date.class)
                 .directModelSubstitute(LocalTime.class, Date.class)

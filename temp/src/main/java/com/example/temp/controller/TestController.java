@@ -2,16 +2,15 @@ package com.example.temp.controller;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONWriter;
-import com.example.common.result.ResponseResult;
-import com.example.temp.service.TestService;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.Data;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -29,34 +28,24 @@ import java.util.Map;
 @RestController
 @RequestMapping("/test")
 public class TestController {
-    @Resource
-    private TestService testService;
-
-    @GetMapping("/async")
-    public ResponseResult<?> testAsync(@RequestParam LocalDate localDate) {
-        testService.asyncMethod();
-        return ResponseResult.success();
-    }
-
     @SneakyThrows
     @GetMapping("/get")
-    public ResponseResult<?> testGet(Person person) {
+    public Person testGet(@Valid Person person) {
         log.debug("testGet  输出： {}", person);
-        return ResponseResult.success();
+        return person;
     }
 
     @SneakyThrows
     @PostMapping("/post")
-    public ResponseResult<Person> testPost(@RequestBody Person person) {
+    public Person testPost(@RequestBody @Valid Person person) {
         log.debug("testPost  输出：{}", person);
         System.out.println(Integer.lowestOneBit(3628800));
 
-        return ResponseResult.success(person);
+        return person;
     }
 
-
     @GetMapping("/config")
-    public ResponseResult<?> testConfig() {
+    public Map<String, Object> testConfig(@RequestParam @NotNull Integer name) {
         Map<String, Object> result = new HashMap<>();
         result.put("date", new Date());
         result.put("localDate", LocalDate.now());
@@ -65,25 +54,18 @@ public class TestController {
         result.put("long.class", BigInteger.valueOf(9007199254740997583L));
         result.put("null", null);
         log.debug("config  输出：{}", result);
-        return ResponseResult.success(result);
+        return result;
     }
 
     @PostMapping("/callback")
-    public ResponseResult<?> testCallback(String eventId, String status, @RequestBody JSONObject msg) {
+    public void testCallback(String eventId, String status, @RequestBody JSONObject msg) {
         log.info("callback  输出：{}", msg.toJSONString(JSONWriter.Feature.PrettyFormat));
         log.info("callback  输出：{}", JSONObject.toJSONString(msg, JSONWriter.Feature.PrettyFormat));
         log.info("callback  输出：{}{}", eventId, status);
-        return ResponseResult.success();
-    }
-
-    @GetMapping("/testThreadLocalAndPool")
-    public ResponseResult<?> testThreadLocalAndPool() {
-        testService.testThreadLocalAndPool();
-        return ResponseResult.success();
     }
 
     @Data
-    static class Person {
+    public static class Person {
         @NotBlank
         private String name;
 
@@ -101,5 +83,14 @@ public class TestController {
 
         @NotEmpty
         private List<String> child;
+
+        @Valid
+        private Student student;
+    }
+
+    @Data
+    public static class Student {
+        @NotBlank
+        private String stuName;
     }
 }
