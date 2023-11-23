@@ -23,23 +23,23 @@ public class ResponseResult<T> implements Serializable {
     private final String message;
 
     private ResponseResult(T data) {
-        this(data, RespResultEnum.SUCCESS);
+        this(RespResultEnum.SUCCESS, data);
     }
 
     private ResponseResult(RespResultEnum resultEnum) {
-        this(null, resultEnum);
+        this(resultEnum, (T) null);
     }
 
-    private ResponseResult(T data, RespResultEnum resultEnum) {
-        this(data, resultEnum.code, resultEnum.message);
+    private ResponseResult(RespResultEnum resultEnum, T data) {
+        this(data, resultEnum.getCode(), resultEnum.getMessage());
     }
 
     private ResponseResult(RespResultEnum resultEnum, String message) {
-        this(null, resultEnum.code, message);
+        this(null, resultEnum.getCode(), message);
     }
 
-    private ResponseResult(T data, RespResultEnum resultEnum, String message) {
-        this(data, resultEnum.code, message);
+    private ResponseResult(RespResultEnum resultEnum, T data, String message) {
+        this(data, resultEnum.getCode(), message);
     }
 
     private ResponseResult(T data, int code, String message) {
@@ -61,7 +61,7 @@ public class ResponseResult<T> implements Serializable {
     }
 
     public static <T> ResponseResult<T> error(T data) {
-        return new ResponseResult<>(data, RespResultEnum.ERROR);
+        return new ResponseResult<>(RespResultEnum.ERROR, data);
     }
 
     public static <T> ResponseResult<T> error(String message) {
@@ -69,7 +69,7 @@ public class ResponseResult<T> implements Serializable {
     }
 
     public static <T> ResponseResult<T> error(T data, String message) {
-        return new ResponseResult<>(data, RespResultEnum.ERROR, message);
+        return new ResponseResult<>(RespResultEnum.ERROR, data, message);
     }
 
     public static <T> ResponseResult<T> error(RespResultEnum resultEnum) {
@@ -79,11 +79,11 @@ public class ResponseResult<T> implements Serializable {
         return new ResponseResult<>(resultEnum);
     }
 
-    public static <T> ResponseResult<T> error(T data, RespResultEnum resultEnum) {
+    public static <T> ResponseResult<T> error(RespResultEnum resultEnum, T data) {
         if (Objects.isNull(resultEnum)) {
             return error(data);
         }
-        return new ResponseResult<>(data, resultEnum);
+        return new ResponseResult<>(resultEnum, data);
     }
 
     public static <T> ResponseResult<T> error(RespResultEnum resultEnum, String message) {
@@ -93,10 +93,10 @@ public class ResponseResult<T> implements Serializable {
         return new ResponseResult<>(resultEnum, message);
     }
 
-    public static <T> ResponseResult<T> error(T data, RespResultEnum resultEnum, String message) {
+    public static <T> ResponseResult<T> error(RespResultEnum resultEnum, T data, String message) {
         if (Objects.isNull(resultEnum)) {
             return error(data, message);
         }
-        return new ResponseResult<>(data, resultEnum, message);
+        return new ResponseResult<>(resultEnum, data, message);
     }
 }
