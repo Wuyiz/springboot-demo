@@ -55,9 +55,15 @@ public class GlobalExceptionAdviceHandle {
     }
 
     /**
-     * BindException：form-data、x-www-form-urlencoded方式绑定到Java Bean时，bean内属性校验失败，抛出该异常
+     * BindException：表单提交时，Bean内属性校验失败，抛出该异常<br/>
+     * 注意：form-data或x-www-form-urlencoded，并且接收参数必须是一个Bean对象<br/>
+     * 处理器：{@link org.springframework.web.method.annotation.ModelAttributeMethodProcessor#resolveArgument}
      * <p>
-     * MethodArgumentNotValidException：基于json提交时，参数校验失败，抛出该异常
+     * MethodArgumentNotValidException：请求体Json提交时，Bean内属性校验失败，抛出该异常<br/>
+     * 注意：application/json，并且接收参数必须是一个对象<br/>
+     * 处理器：{@link org.springframework.web.servlet.mvc.method.annotation.RequestResponseBodyMethodProcessor#resolveArgument}
+     * <p>
+     * 两个处理器的调用点：{@link org.springframework.web.method.support.HandlerMethodArgumentResolverComposite#resolveArgument}
      */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({BindException.class, MethodArgumentNotValidException.class})
@@ -84,12 +90,10 @@ public class GlobalExceptionAdviceHandle {
     }
 
     /**
-     * ConstraintViolationException：参数才方法上而不是对象内，且存在@Validated和@NotBlank等JSR-303注解时，校验失败则抛出此异常
-     * <p>
-     * 例：当控制层接口的方法参数不在自定义的对象内，而是直接在方法上时，校验不通过才会抛出此异常；<br>
-     * 例如，public void testApi(@RequestParam @NotBlank String name) {}
-     * <p>
-     * 注意：必须搭配@Validated注解，并且该注解需要在在控制层的类、或方法、或参数上，校验方能生效
+     * ConstraintViolationException：（x-www-form-urlencoded）表单提交时，方法参数校验失败，抛出该异常<br/>
+     * 注意：存在@Validated注解，且方法的参数（参数不能是Bean对象）标注了@NotBlank等JSR-303规约注解时校验失败才会抛出此异常<br/>
+     * 例如，public void testApi(@RequestParam @NotBlank String name) {}<br/>
+     * 处理器：{@link org.springframework.validation.beanvalidation.MethodValidationInterceptor#invoke}
      */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ConstraintViolationException.class)
