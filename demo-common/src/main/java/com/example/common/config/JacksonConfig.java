@@ -7,14 +7,12 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
-import javax.annotation.PostConstruct;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -30,31 +28,21 @@ import java.time.format.DateTimeFormatter;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Jackson2ObjectMapperBuilder.class)
 public class JacksonConfig {
-    @Value("${spring.jackson.date-format:yyyy-MM-dd HH:mm:ss}")
-    private String dateTimeFormat;
-    @Value("${spring.jackson.custom-date-format:yyyy-MM-dd}")
-    private String dateFormat = "yyyy-MM-dd";
-    @Value("${spring.jackson.custom-time-format:HH:mm:ss}")
-    private String timeFormat = "HH:mm:ss";
+    private static final String DATE_PATTERN = "yyyy-MM-dd";
+    private static final String TIME_PATTERN = "HH:mm:ss";
+    private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
 
-    private DateTimeFormatter dateFormatter;
-    private DateTimeFormatter timeFormatter;
-    private DateTimeFormatter dateTimeFormatter;
-
-    @PostConstruct
-    public void init() {
-        dateFormatter = DateTimeFormatter.ofPattern(dateFormat);
-        timeFormatter = DateTimeFormatter.ofPattern(timeFormat);
-        dateTimeFormatter = DateTimeFormatter.ofPattern(dateTimeFormat);
-    }
+    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(DATE_PATTERN);
+    private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern(TIME_PATTERN);
+    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
 
     @Bean
     public Jackson2ObjectMapperBuilderCustomizer jackson2ObjectMapperBuilderCustomizer() {
         return builder -> {
             configureJavaTimeSerializer(builder);
-            // todo 反序列化配置存在问题
+            // todo 反序列化配置不生效
             // 已发现问题2：在feign调用时，如果远程接口响应参数的localDateTime格式与全局反序列化格式不一致时，会报反序列化异常
-            // 建议：反序列化时手动加@JsonFormat匹配传入的格式，避免反序列化失败
+            // 建议：在feign调用时,手动加@JsonFormat传入的格式，避免反序列化失败
             // 注意：@JsonFormat序列化和反序列化优先级高于自定义的全局配置，配置了此注解的localDateTime将会执行注解参数里的值进行序列化和反序列化
             // configureJavaTimeDeserializer(builder);
             configureNumberTypeSerializer(builder);

@@ -27,7 +27,7 @@ import java.util.List;
  * 把所有的配置统一汇总到WebMvcConfigurerComposite中，并进行SpringMVC的配置。
  * <p>
  * 注意：在非SpringBoot的环境中使用时，需要配合@EnableWebMvc来生效，这个注解中导入了DelegatingWebMvcConfiguration类；
- * springboot环境中则不需要使用此注解，原因是springboot会自动
+ * springboot环境中则不需要使用此注解，原因是springboot实现了自动配置
  */
 @Configuration
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)

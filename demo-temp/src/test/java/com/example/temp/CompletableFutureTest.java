@@ -29,7 +29,7 @@ public class CompletableFutureTest {
                     log.info("{}_list: {} ， {}", res, list, Thread.currentThread().isDaemon());
                 });
         CompletableFuture<String> future2 = CompletableFuture
-                .supplyAsync(() -> fuc(2, 2000L), executor)
+                .supplyAsync(() -> fuc(2, 2000L))
                 .thenApply(res -> {
                     log.info("{}: {}  {} ms", res, Thread.currentThread().getName(), timer.interval());
                     return res;
@@ -38,7 +38,7 @@ public class CompletableFutureTest {
                     log.info("{}_list: {} ， {}", res, list, Thread.currentThread().isDaemon());
                 });
         CompletableFuture<String> future3 = CompletableFuture
-                .supplyAsync(() -> fuc(3, 3000L), executor)
+                .supplyAsync(() -> fuc(3, 3000L))
                 .thenApply(res -> {
                     log.info("{}: {}  {} ms", res, Thread.currentThread().getName(), timer.interval());
                     return res;
@@ -48,14 +48,14 @@ public class CompletableFutureTest {
                 });
         log.info("list_main: {} ， {}", list, Thread.currentThread().isDaemon());
 
-        /*String result_1 = future1.join();
-        log.info("{} : {}", result_1, timer.interval());
+        // String result_1 = future1.join();
+        // log.info("{} : {}", result_1, timer.interval());
+        //
+        // String result_2 = future2.join();
+        // log.info("{} : {}", result_2, timer.interval());
 
-        String result_2 = future2.join();
-        log.info("{} : {}", result_2, timer.interval());
-
-        String result_3 = future3.join();
-        log.info("{} : {}", result_3, timer.interval());*/
+        // String result_3 = future3.join();
+        // log.info("{} : {}", result_3, timer.interval());
 
         log.info("结束......{}ms.........", timer.interval());
         executor.shutdown();

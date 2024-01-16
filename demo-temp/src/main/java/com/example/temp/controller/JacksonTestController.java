@@ -1,5 +1,6 @@
 package com.example.temp.controller;
 
+import com.example.common.domain.ResponseResult;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiOperation;
 import lombok.Data;
@@ -18,12 +19,12 @@ import java.util.Date;
 public class JacksonTestController {
     @ApiOperation("get")
     @GetMapping("/get")
-    public String get(@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date date,
-                      @RequestParam(required = false) LocalDateTime localDateTime,
-                      @RequestParam(required = false) Integer testInt
+    public ResponseResult<String> get(@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date date,
+                                      @RequestParam(required = false) LocalDateTime localDateTime,
+                                      @RequestParam(required = false) Integer testInt
     ) {
         log.info("get");
-        return "get";
+        return ResponseResult.success("get");
     }
 
     @ApiOperation("getObj")
