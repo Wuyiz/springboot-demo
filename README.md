@@ -73,6 +73,24 @@ public class TableName implements Serializable {
 
 ```yaml
 # spring-log配置
+server:
+  port: 18080
+  servlet:
+    context-path: /service-path
+  tomcat:
+    # tomcat允许的请求大小，如果上传文件大于该配置数额，请求会直接返回错误，而不会被全局异常捕获
+    # 可以设置为-1表示无限大，避免全局异常无法捕获
+    # 一般会和springboot的文件上传大小的配置搭配使用
+    max-swallow-size: -1
+
+spring:
+  servlet:
+    multipart:
+      # 配置上传的单个文件大小
+      max-file-size: 100MB
+      # 配置单次请求允许上传的所有文件的总大小（单词请求上传10个文件的总大小）
+      max-request-size: 100MB
+
 logging:
   config: classpath:log4j2.xml
   file:
