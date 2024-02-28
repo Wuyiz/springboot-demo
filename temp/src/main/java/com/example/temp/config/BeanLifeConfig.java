@@ -41,7 +41,8 @@ public class BeanLifeConfig {
     }
 
     @Slf4j
-    static class BeanLifeCycleTest implements InitializingBean, DisposableBean, Lifecycle {
+    public static
+    class BeanLifeCycleTest implements InitializingBean, DisposableBean, Lifecycle {
         static {
             log.warn("static");
         }
@@ -52,12 +53,12 @@ public class BeanLifeConfig {
 
 
         @PostConstruct
-        public void PostConstruct() {
+        public void postConstruct() {
             log.warn("PostConstruct");
         }
 
         @PreDestroy
-        public void PreDestroy() {
+        public void preDestroy() {
             log.warn("PreDestroy");
         }
 
@@ -109,7 +110,8 @@ public class BeanLifeConfig {
     }
 
     @Slf4j
-    static class BeanSmartLifeCycleTest implements InitializingBean, DisposableBean, SmartLifecycle {
+    public static
+    class BeanSmartLifeCycleTest implements InitializingBean, DisposableBean, SmartLifecycle {
         static {
             log.warn("static");
         }
@@ -119,12 +121,12 @@ public class BeanLifeConfig {
         }
 
         @PostConstruct
-        public void PostConstruct() {
+        public void postConstruct() {
             log.warn("PostConstruct");
         }
 
         @PreDestroy
-        public void PreDestroy() {
+        public void preDestroy() {
             log.warn("PreDestroy");
         }
 
