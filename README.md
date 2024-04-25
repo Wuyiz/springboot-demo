@@ -17,7 +17,7 @@
 
 ### 数据库基础字段以及规约
 
-1. id如果是varchar，长度统一设置为50；如果为数字，统一为无符号的bigint类型
+1. id如果是varchar，长度统一设置为100；如果为数字，统一为无符号的bigint类型
 2. name、code等varchar类型，长度统一为100
 3. introduction、remarks等短文本字段，统一为varchar类型，默认500~1000长度
 4. description等长文本字段，统一为varchar类型，默认2000~4000长度
