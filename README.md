@@ -17,26 +17,28 @@
 
 ### 数据库基础字段以及规约
 
-1. id如果是varchar，长度统一设置为100；如果为数字，统一为无符号的bigint类型
-2. name、code等varchar类型，长度统一为100
-3. introduction、remarks等短文本字段，统一为varchar类型，默认500~1000长度
-4. description等长文本字段，统一为varchar类型，默认2000~4000长度
-5. 超过5000长度，使用text、longtext等文本类型（如果表数据量预计将来增长较大时，新开表存储文本，避免影响查询效率）
-6. 如果要记录时区信息，应该使用timestamp类型，而不是datetime类型
-7. 创建时间和更新时间字段的精度设置为3|6位，针对同一秒插入的数据也可以正确排序
-8. 索引命名方式：普通索引用idx_，唯一约束用uk_，主键约束用pk_
-9. 涉及表的状态字段时，如果字段是tinyint等数字类型，不需要设置成无符号，因为状态值可以存在负值
+1. id如果是varchar，默认为100个字符长度；如果为数字，默认为无符号的bigint类型
+2. phone等varchar类型，默认为20~30个字符长度
+3. title等varchar类型，默认为50个字符长度
+4. name、code等varchar类型，默认为100个字符长度
+5. introduction、remarks等短文本varchar类型，默认500~1000个字符长度
+6. description等长文本varchar类型，默认2000~4000个字符长度
+7. 超过5000个字符长度，使用text、longtext等文本类型（如果表数据量预计将来增长较大时，新开表存储文本，避免影响查询效率）
+8. 如果要记录时区信息，应该使用timestamp类型，而不是datetime类型
+9. 创建时间和更新时间字段的精度设置为3|6位，针对同一秒插入的数据也可以正确排序
+10. 索引命名方式：普通索引用idx_，唯一约束用uk_，主键约束用pk_
+11. 涉及表的状态字段status时，如果字段是tinyint、int等类型，不需要设置成无符号，因为状态值可以存在负值；varchar类型时，默认为20个字符长度
 
 ```sql
 CREATE TABLE `table_name`
 (
-  `id`           bigint unsigned NOT NULL COMMENT '主键ID',
-  `is_deleted`   tinyint                                                       DEFAULT '0' COMMENT '逻辑删除（0：未删除；1：已删除）',
-  `created_by`   varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '创建人',
-  `created_time` datetime(3)                                                   DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
-  `updated_by`   varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '更新人',
-  `updated_time` datetime(3)                                                   DEFAULT NULL COMMENT '更新时间',
-  PRIMARY KEY (`id`)
+    `id`           bigint unsigned NOT NULL COMMENT '主键ID',
+    `is_deleted`   tinyint                                                       DEFAULT '0' COMMENT '逻辑删除（0：未删除；1：已删除）',
+    `created_by`   varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '创建人',
+    `created_time` datetime(3) DEFAULT CURRENT_TIMESTAMP (3) COMMENT '创建时间',
+    `updated_by`   varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '更新人',
+    `updated_time` datetime(3) DEFAULT NULL COMMENT '更新时间',
+    PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
