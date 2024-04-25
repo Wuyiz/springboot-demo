@@ -17,17 +17,16 @@
 
 ### 数据库基础字段以及规约
 
-1. id如果是varchar，默认为100个字符长度；如果为数字，默认为无符号的bigint类型
-2. phone等varchar类型，默认为20~30个字符长度
-3. title等varchar类型，默认为50个字符长度
-4. name、code等varchar类型，默认为100个字符长度
-5. introduction、remarks等短文本varchar类型，默认500~1000个字符长度
-6. description等长文本varchar类型，默认2000~4000个字符长度
-7. 超过5000个字符长度，使用text、longtext等文本类型（如果表数据量预计将来增长较大时，新开表存储文本，避免影响查询效率）
-8. 如果要记录时区信息，应该使用timestamp类型，而不是datetime类型
-9. 创建时间和更新时间字段的精度设置为3|6位，针对同一秒插入的数据也可以正确排序
-10. 索引命名方式：普通索引用idx_，唯一约束用uk_，主键约束用pk_
-11. 涉及表的状态字段status时，如果字段是tinyint、int等类型，不需要设置成无符号，因为状态值可以存在负值；varchar类型时，默认为20个字符长度
+1. id如果是varchar，统一为100个字符长度；如果为数字，默认为无符号的bigint类型
+2. phone等varchar类型，统一为20~30个字符长度
+3. title、name、code等varchar类型，统一为100个字符长度
+4. title、remarks等短文本varchar类型，统一500~1000个字符长度
+5. introduction、description等长文本varchar类型，统一为2000~4000个字符长度
+6. 超过5000个字符长度，使用text、longtext等文本类型（如果表数据量预计将来增长较大时，新开表存储文本，避免影响查询效率）
+7. 如果要记录时区信息，应该使用timestamp类型，而不是datetime类型
+8. 创建时间和更新时间字段的精度设置为3|6位，针对同一秒插入的数据也可以正确排序
+9. 索引命名方式：普通索引用idx_，唯一约束用uk_，主键约束用pk_
+10. 涉及表的状态字段status时，如果字段是tinyint、int等类型，不需要设置成无符号，因为状态值可以存在负值；varchar类型时，统一为50个字符长度
 
 ```sql
 CREATE TABLE `table_name`
