@@ -21,7 +21,7 @@
 2. phone等varchar类型，统一为20~30个字符长度
 3. title、name、code等varchar类型，统一为100个字符长度
 4. title、remarks等短文本varchar类型，统一500~1000个字符长度
-5. introduction、description等长文本varchar类型，统一为2000~4000个字符长度
+5. introduction、description等长文本varchar类型，统一为1000~2000个字符长度
 6. 超过5000个字符长度，使用text、longtext等文本类型（如果表数据量预计将来增长较大时，新开表存储文本，避免影响查询效率）
 7. 如果要记录时区信息，应该使用timestamp类型，而不是datetime类型
 8. 创建时间和更新时间字段的精度设置为3|6位，针对同一秒插入的数据也可以正确排序
