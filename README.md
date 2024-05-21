@@ -30,7 +30,10 @@
 11. 索引命名方式：普通索引用idx_，唯一约束用uk_，主键约束用pk_
 
 ```sql
-CREATE TABLE `table_name`
+CREATE DATABASE IF NOT EXISTS  `table_name` CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_0900_ai_ci';
+USE table_name;
+    
+CREATE TABLE IF NOT EXISTS `table_name` (
 (
     `id`           bigint unsigned NOT NULL COMMENT '主键ID',
     `is_deleted`   tinyint                                                       DEFAULT '0' COMMENT '逻辑删除（0：未删除；1：已删除）',
