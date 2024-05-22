@@ -2,15 +2,14 @@ package com.example.redis.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.connection.stream.Consumer;
-import org.springframework.data.redis.connection.stream.ObjectRecord;
-import org.springframework.data.redis.connection.stream.ReadOffset;
-import org.springframework.data.redis.connection.stream.StreamOffset;
+import org.springframework.data.redis.connection.stream.*;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.stream.StreamListener;
 import org.springframework.data.redis.stream.StreamMessageListenerContainer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 import java.time.Duration;
+import java.util.Objects;
 
 /**
  * Redis Stream 工具类
@@ -22,12 +21,34 @@ import java.time.Duration;
  */
 @Slf4j
 public class RedisStreamUtils {
-    // redis stream轮询监听队列线程池（一条队列在监听时，始终会占用线程池内的同一个线程，线程池大小取决于有多少监听器）
+    /**
+     * redis stream轮询监听队列线程池（一条队列在监听时，始终会占用线程池内的同一个线程，线程池大小取决于有多少监听器）
+     */
     private static final ThreadPoolTaskScheduler STREAM_TASK_SCHEDULER = initRedisStreamTaskScheduler();
 
-    public static <NV> StreamMessageListenerContainer<String, ObjectRecord<String, NV>> registerListenerContainer(
-            RedisConnectionFactory factory, String streamKey, String groupName, String consumerName,
-            Class<NV> targetType, StreamListener<String, ObjectRecord<String, NV>> listener) {
+    public static <NV> void initializeStreamAndGroup(String streamKey, String groupName,
+                                                     RedisTemplate<String, NV> redisStreamTemplate) {
+        boolean hasGroup = false;
+        boolean hasStream = Boolean.TRUE.equals(redisStreamTemplate.hasKey(streamKey));
+
+        if (hasStream) {
+            // 队列存在时，检查消费组是否存在
+            StreamInfo.XInfoGroups groups = redisStreamTemplate.opsForStream().groups(streamKey);
+            hasGroup = groups.stream().anyMatch(m -> Objects.equals(m.groupName(), groupName));
+        }
+
+        // 队列和消费组必须都存在，否则进行初始化
+        if (!(hasStream && hasGroup)) {
+            // 初始化stream和group
+            StreamOffset<String> streamOffset = StreamOffset.fromStart(streamKey);
+            redisStreamTemplate.opsForStream().createGroup(streamOffset.getKey(), streamOffset.getOffset(), groupName);
+            log.info("Redis Stream：初始化消息队列{}，消费组{}", streamKey, groupName);
+        }
+    }
+
+    public static <NV> StreamMessageListenerContainer<String, ObjectRecord<String, NV>>
+    registerListenerContainer(RedisConnectionFactory factory, String streamKey, String groupName, String consumerName,
+                              Class<NV> targetType, StreamListener<String, ObjectRecord<String, NV>> listener) {
         StreamMessageListenerContainer.StreamMessageListenerContainerOptions<String, ObjectRecord<String, NV>> options
                 = createContainerOptions(targetType);
         StreamMessageListenerContainer<String, ObjectRecord<String, NV>> listenerContainer
@@ -38,7 +59,8 @@ public class RedisStreamUtils {
         return listenerContainer;
     }
 
-    private static <NV> StreamMessageListenerContainer.StreamMessageListenerContainerOptions<String, ObjectRecord<String, NV>>
+    private static <NV>
+    StreamMessageListenerContainer.StreamMessageListenerContainerOptions<String, ObjectRecord<String, NV>>
     createContainerOptions(Class<NV> targetType) {
         return StreamMessageListenerContainer.StreamMessageListenerContainerOptions.builder()
                 .batchSize(5)
@@ -51,8 +73,9 @@ public class RedisStreamUtils {
                 .build();
     }
 
-    private static StreamMessageListenerContainer.StreamReadRequest<String> createReadRequest(
-            String streamKey, String groupName, String consumerName) {
+    private static StreamMessageListenerContainer.StreamReadRequest<String> createReadRequest(String streamKey,
+                                                                                              String groupName,
+                                                                                              String consumerName) {
         return StreamMessageListenerContainer.StreamReadRequest
                 .builder(StreamOffset.create(streamKey, ReadOffset.lastConsumed()))
                 .consumer(Consumer.from(groupName, consumerName))
