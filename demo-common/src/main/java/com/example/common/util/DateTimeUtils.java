@@ -26,7 +26,7 @@ public class DateTimeUtils {
     private static final Map<String, ChronoUnit> CHRONOS_UNIT_MAPPING = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
     static {
-        CHRONOS_UNIT_MAPPING.put(CHRONOS_UNIT_STR_SECONDS, ChronoUnit.YEARS);
+        CHRONOS_UNIT_MAPPING.put(CHRONOS_UNIT_STR_SECONDS, ChronoUnit.SECONDS);
         CHRONOS_UNIT_MAPPING.put(CHRONOS_UNIT_STR_MINUTES, ChronoUnit.MINUTES);
         CHRONOS_UNIT_MAPPING.put(CHRONOS_UNIT_STR_HOURS, ChronoUnit.HOURS);
         CHRONOS_UNIT_MAPPING.put(CHRONOS_UNIT_STR_DAYS, ChronoUnit.DAYS);
