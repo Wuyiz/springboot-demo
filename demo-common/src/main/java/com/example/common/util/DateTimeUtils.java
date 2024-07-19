@@ -46,21 +46,41 @@ public class DateTimeUtils {
     }
 
     /**
+     * 时间切片方法（重载）
+     *
+     * @return 时间切片集合
+     */
+    public static List<Map.Entry<LocalDateTime, LocalDateTime>> timeSlicing(LocalDateTime start, LocalDateTime end,
+                                                                            long delta, TemporalUnit unit) {
+        return timeSlicing(start, end, delta, unit, true);
+    }
+
+    /**
      * 时间切片方法
      * <p>
      * 调用者给定时间范围，此方法则会按照时间单位和时间增量生成若干份连续的时间片段
      *
-     * @param start 开始时间
-     * @param end   结束时间
-     * @param delta 时间增量
-     * @param unit  时间单位
+     * @param start     开始时间
+     * @param end       结束时间
+     * @param delta     时间增量
+     * @param unit      时间单位
+     * @param hasFuture 是否生成有未来时间的切片（false：生成的切片时间最终结束段为当前时间，而非传入的值）
      * @return 时间切片集合，存储的都是片段的开始时间和结束时间
      */
     public static List<Map.Entry<LocalDateTime, LocalDateTime>> timeSlicing(LocalDateTime start, LocalDateTime end,
-                                                                            long delta, TemporalUnit unit) {
+                                                                            long delta, TemporalUnit unit,
+                                                                            boolean hasFuture) {
+        // 是否生成有未来时间的切片组
+        if (!hasFuture) {
+            LocalDateTime now = LocalDateTime.now();
+            // 判断当前时间是否早于切片的结束时间，若是，则替换结束时间为当前时间
+            if (now.isBefore(end)) {
+                end = now;
+            }
+        }
+
         LocalDateTime startSegment = start;
         LocalDateTime endSegment;
-
         List<Map.Entry<LocalDateTime, LocalDateTime>> timeSlicing = new ArrayList<>();
         while (startSegment.isBefore(end)) {
             endSegment = startSegment.plus(delta, unit);
