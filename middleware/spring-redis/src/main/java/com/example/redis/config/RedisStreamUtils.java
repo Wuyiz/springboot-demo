@@ -26,8 +26,8 @@ public class RedisStreamUtils {
      */
     private static final ThreadPoolTaskScheduler STREAM_TASK_SCHEDULER = initRedisStreamTaskScheduler();
 
-    public static <NV> void initializeStreamAndGroup(String streamKey, String groupName,
-                                                     RedisTemplate<String, NV> redisStreamTemplate) {
+    public static <NV> void initializeStreamAndGroupIfNeeded(String streamKey, String groupName,
+                                                             RedisTemplate<String, NV> redisStreamTemplate) {
         boolean hasGroup = false;
         boolean hasStream = Boolean.TRUE.equals(redisStreamTemplate.hasKey(streamKey));
 
@@ -46,9 +46,9 @@ public class RedisStreamUtils {
         }
     }
 
-    public static <NV> StreamMessageListenerContainer<String, ObjectRecord<String, NV>>
-    registerListenerContainer(RedisConnectionFactory factory, String streamKey, String groupName, String consumerName,
-                              Class<NV> targetType, StreamListener<String, ObjectRecord<String, NV>> listener) {
+    public static <NV> StreamMessageListenerContainer<String, ObjectRecord<String, NV>> registerListenerContainer(
+            RedisConnectionFactory factory, String streamKey, String groupName, String consumerName,
+            Class<NV> targetType, StreamListener<String, ObjectRecord<String, NV>> listener) {
         StreamMessageListenerContainer.StreamMessageListenerContainerOptions<String, ObjectRecord<String, NV>> options
                 = createContainerOptions(targetType);
         StreamMessageListenerContainer<String, ObjectRecord<String, NV>> listenerContainer

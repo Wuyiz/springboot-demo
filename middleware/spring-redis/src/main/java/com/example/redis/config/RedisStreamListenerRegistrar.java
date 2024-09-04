@@ -29,7 +29,7 @@ public class RedisStreamListenerRegistrar {
     @Bean(initMethod = "start")
     public StreamMessageListenerContainer<String, ObjectRecord<String, DemoMessage>> processEndListener(
             RedisConnectionFactory factory, DemoListener listener) {
-        RedisStreamUtils.initializeStreamAndGroup(STREAM, GROUP, redisStreamTemplate);
+        RedisStreamUtils.initializeStreamAndGroupIfNeeded(STREAM, GROUP, redisStreamTemplate);
         return RedisStreamUtils.registerListenerContainer(factory, STREAM, GROUP, CONSUMER, DemoMessage.class, listener);
     }
 
