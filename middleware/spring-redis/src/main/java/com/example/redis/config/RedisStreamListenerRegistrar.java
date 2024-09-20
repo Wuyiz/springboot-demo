@@ -18,9 +18,9 @@ import javax.annotation.Resource;
 @Slf4j
 @Component
 public class RedisStreamListenerRegistrar {
-    public static final String GROUP = "demo-group";
-    public static final String CONSUMER = "demo-consumer";
-    public static final String STREAM = "demo:testStream";
+    public static final String GROUP = "demo_group";
+    public static final String CONSUMER = "demo_consumer";
+    public static final String STREAM = "demo:test_stream";
 
 
     @Resource(name = RedisConfig.BEAN_NAME_REDIS_STREAM_TEMPLATE)

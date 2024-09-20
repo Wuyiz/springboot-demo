@@ -20,7 +20,7 @@ spring:
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
     consumer: # consumer消费者
       # 默认的消费组ID
-      group-id: test-group
+      group-id: test_group
       # 默认的消费主题
       # topic-name: test,test2
       # 是否自动提交offset
