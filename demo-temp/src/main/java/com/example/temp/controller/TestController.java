@@ -3,7 +3,6 @@ package com.example.temp.controller;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONWriter;
 import io.swagger.annotations.ApiModelProperty;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.Data;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -61,7 +60,7 @@ public class TestController {
     public void testCallback(String eventId, String status, @RequestBody JSONObject msg) {
         log.info("callback  输出：{}", msg.toJSONString(JSONWriter.Feature.PrettyFormat));
         log.info("callback  输出：{}", JSONObject.toJSONString(msg, JSONWriter.Feature.PrettyFormat));
-        log.info("callback  输出：{}{}", eventId, status);
+        log.info("callback  输出：{} {}", eventId, status);
     }
 
     @Data
@@ -71,10 +70,13 @@ public class TestController {
 
         @ApiModelProperty("localDate")
         private LocalDate localDate;
+
         @ApiModelProperty("localTime")
         private LocalTime localTime;
+
         @ApiModelProperty("localDateTime")
         private LocalDateTime localDateTime;
+
         @ApiModelProperty("date")
         private Date date;
 

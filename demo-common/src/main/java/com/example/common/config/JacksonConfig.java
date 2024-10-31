@@ -40,10 +40,6 @@ public class JacksonConfig {
     public Jackson2ObjectMapperBuilderCustomizer jackson2ObjectMapperBuilderCustomizer() {
         return builder -> {
             configureJavaTimeSerializer(builder);
-            // todo 反序列化配置不生效
-            // 已发现问题2：在feign调用时，如果远程接口响应参数的localDateTime格式与全局反序列化格式不一致时，会报反序列化异常
-            // 建议：在feign调用时,手动加@JsonFormat传入的格式，避免反序列化失败
-            // 注意：@JsonFormat序列化和反序列化优先级高于自定义的全局配置，配置了此注解的localDateTime将会执行注解参数里的值进行序列化和反序列化
             // configureJavaTimeDeserializer(builder);
             configureNumberTypeSerializer(builder);
         };
@@ -55,17 +51,24 @@ public class JacksonConfig {
         builder.serializerByType(LocalDateTime.class, new LocalDateTimeSerializer(dateTimeFormatter));
     }
 
+    /**
+     * {@link com.fasterxml.jackson.annotation.JsonFormat}在序列化和反序列化上优先级高于自定义的全局配置，
+     * 配置了此注解的localDateTime将会优先执行注解参数里的格式化值进行序列化和反序列化
+     */
     private void configureJavaTimeDeserializer(Jackson2ObjectMapperBuilder builder) {
+        // todo 反序列化配置不够全面
         builder.deserializerByType(LocalDate.class, new LocalDateDeserializer(dateFormatter));
         builder.deserializerByType(LocalTime.class, new LocalTimeDeserializer(timeFormatter));
         builder.deserializerByType(LocalDateTime.class, new LocalDateTimeDeserializer(dateTimeFormatter));
     }
 
     /**
-     * 超大整数类型序列化为String，解决后端响应数据给前端出现精度丢失问题
+     * 长整数类型序列化为字符串形式
      * <p>
-     * 原因：前端处理整数数据时，会将其转换成Number类型进行操作，而Number的精度范围在 -2^53 到 2^53 之间（不含两个端点），
-     * 即 -9007199254740991 ~ 9007199254740991，超出范围则有可能产生精度丢失。
+     * 原因：前端处理长整型数据时，会将其转换成Number类型进行操作，而Number的精度范围在 -2^53 到 2^53 之间（不含两个端点），
+     * 即 -9007199254740991 ~ 9007199254740991，一般为16位数字长度，如果超出范围则有可能产生精度丢失的问题。
+     * <p>
+     * 案例：后端使用雪花算法生成数据ID，由于生成的ID是长整型，且数字位数已然超过前端JS能够处理的精度，所以会出现精度丢失的问题，导致前端取到的ID数据错误。
      */
     private void configureNumberTypeSerializer(Jackson2ObjectMapperBuilder builder) {
         builder.serializerByType(Long.class, ToStringSerializer.instance);
