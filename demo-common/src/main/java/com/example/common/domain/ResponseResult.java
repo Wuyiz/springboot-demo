@@ -4,8 +4,8 @@ import com.example.common.enums.RespResultEnum;
 import lombok.Getter;
 import lombok.ToString;
 
+import javax.annotation.Nonnull;
 import java.io.Serializable;
-import java.util.Objects;
 
 /**
  * 统一封装请求响应结果集
@@ -18,11 +18,20 @@ import java.util.Objects;
 public class ResponseResult<T> implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private final int code;
     private final T data;
+    private final int code;
     private final String message;
 
-    private ResponseResult(int code, T data, String message) {
+    /**
+     * 构造方法
+     * <p>
+     * 注意：必须是public，否则同平台下的其他服务接收响应结果时无法反序列化
+     *
+     * @param data    响应数据
+     * @param code    响应状态码
+     * @param message 响应消息
+     */
+    public ResponseResult(T data, int code, String message) {
         this.code = code;
         this.message = message;
         this.data = data;
@@ -33,44 +42,22 @@ public class ResponseResult<T> implements Serializable {
     }
 
     public static <T> ResponseResult<T> success(T data) {
-        return new ResponseResult<>(RespResultEnum.SUCCESS.getCode(), data, RespResultEnum.SUCCESS.getMessage());
+        return new ResponseResult<>(data, RespResultEnum.SUCCESS.getCode(), RespResultEnum.SUCCESS.getMessage());
     }
 
     public static <T> ResponseResult<T> error() {
         return error(RespResultEnum.ERROR);
     }
 
-    public static <T> ResponseResult<T> error(T data) {
-        return error(RespResultEnum.ERROR, data);
+    public static <T> ResponseResult<T> error(@Nonnull RespResultEnum resultEnum) {
+        return error(resultEnum, resultEnum.getMessage());
     }
 
     public static <T> ResponseResult<T> error(String message) {
         return error(RespResultEnum.ERROR, message);
     }
 
-    public static <T> ResponseResult<T> error(T data, String message) {
-        return error(RespResultEnum.ERROR, data, message);
-    }
-
-    public static <T> ResponseResult<T> error(RespResultEnum resultEnum) {
-        return error(resultEnum, (T) null);
-    }
-
-    public static <T> ResponseResult<T> error(RespResultEnum resultEnum, T data) {
-        if (Objects.isNull(resultEnum)) {
-            resultEnum = RespResultEnum.ERROR;
-        }
-        return error(resultEnum, data, resultEnum.getMessage());
-    }
-
-    public static <T> ResponseResult<T> error(RespResultEnum resultEnum, String message) {
-        return error(resultEnum, null, message);
-    }
-
-    public static <T> ResponseResult<T> error(RespResultEnum resultEnum, T data, String message) {
-        if (Objects.isNull(resultEnum)) {
-            resultEnum = RespResultEnum.ERROR;
-        }
-        return new ResponseResult<>(resultEnum.getCode(), data, message);
+    public static <T> ResponseResult<T> error(@Nonnull RespResultEnum resultEnum, String message) {
+        return new ResponseResult<>(null, resultEnum.getCode(), message);
     }
 }
