@@ -11,9 +11,6 @@ spring:
     # 原因是如果pom继承了spring-boot-starter-parent，springboot会替换maven-resources-plugins默认的${}方式为‘@@’方式，例如@name@
     # active: ${profiles.active}
     active: @profiles.active@
-  jackson:
-    time-zone: GMT+8
-    date-format: yyyy-MM-dd HH:mm:ss
 
 # Knife4j配置自定义属性
 knife4j-custom:
