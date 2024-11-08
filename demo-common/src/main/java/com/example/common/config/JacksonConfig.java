@@ -1,9 +1,8 @@
 package com.example.common.config;
 
+import com.fasterxml.jackson.databind.ser.std.DateSerializer;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
@@ -14,13 +13,18 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import java.math.BigInteger;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 /**
  * Jackson全局序列化配置
+ * <p>
+ * {@link com.fasterxml.jackson.annotation.JsonFormat}在序列化和反序列化上优先级高于自定义的全局配置，
+ * 配置了此注解的时间类将会优先执行注解参数里的格式化值进行序列化和反序列化
  *
  * @author suhai
  * @since 2023-05-05
@@ -28,38 +32,37 @@ import java.time.format.DateTimeFormatter;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Jackson2ObjectMapperBuilder.class)
 public class JacksonConfig {
-    private static final String DATE_PATTERN = "yyyy-MM-dd";
-    private static final String TIME_PATTERN = "HH:mm:ss";
-    private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
+    private static final String LOCAL_DATE_PATTERN = "yyyy-MM-dd";
+    private static final String LOCAL_TIME_PATTERN = "HH:mm:ss";
+    private static final String LOCAL_DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
+    private static final String JDK_DATE_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
 
-    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(DATE_PATTERN);
-    private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern(TIME_PATTERN);
-    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
+    private final SimpleDateFormat jdkDateFormat = new SimpleDateFormat(JDK_DATE_PATTERN);
+    private final DateTimeFormatter localDateFormat = DateTimeFormatter.ofPattern(LOCAL_DATE_PATTERN);
+    private final DateTimeFormatter localTimeFormat = DateTimeFormatter.ofPattern(LOCAL_TIME_PATTERN);
+    private final DateTimeFormatter localDateTimeFormat = DateTimeFormatter.ofPattern(LOCAL_DATE_TIME_PATTERN);
 
     @Bean
     public Jackson2ObjectMapperBuilderCustomizer jackson2ObjectMapperBuilderCustomizer() {
         return builder -> {
             configureJavaTimeSerializer(builder);
-            // configureJavaTimeDeserializer(builder);
+            configureJavaTimeDeserializer(builder);
             configureNumberTypeSerializer(builder);
         };
     }
 
     private void configureJavaTimeSerializer(Jackson2ObjectMapperBuilder builder) {
-        builder.serializerByType(LocalDate.class, new LocalDateSerializer(dateFormatter));
-        builder.serializerByType(LocalTime.class, new LocalTimeSerializer(timeFormatter));
-        builder.serializerByType(LocalDateTime.class, new LocalDateTimeSerializer(dateTimeFormatter));
+        builder.serializerByType(Date.class, new DateSerializer(false, jdkDateFormat));
+        builder.serializerByType(LocalDate.class, new LocalDateSerializer(localDateFormat));
+        builder.serializerByType(LocalTime.class, new LocalTimeSerializer(localTimeFormat));
+        builder.serializerByType(LocalDateTime.class, new LocalDateTimeSerializer(localDateTimeFormat));
     }
 
-    /**
-     * {@link com.fasterxml.jackson.annotation.JsonFormat}在序列化和反序列化上优先级高于自定义的全局配置，
-     * 配置了此注解的localDateTime将会优先执行注解参数里的格式化值进行序列化和反序列化
-     */
     private void configureJavaTimeDeserializer(Jackson2ObjectMapperBuilder builder) {
         // todo 反序列化配置不够全面
-        builder.deserializerByType(LocalDate.class, new LocalDateDeserializer(dateFormatter));
-        builder.deserializerByType(LocalTime.class, new LocalTimeDeserializer(timeFormatter));
-        builder.deserializerByType(LocalDateTime.class, new LocalDateTimeDeserializer(dateTimeFormatter));
+        // builder.deserializerByType(LocalDate.class, new LocalDateDeserializer(dateFormatter));
+        // builder.deserializerByType(LocalTime.class, new LocalTimeDeserializer(timeFormatter));
+        builder.deserializerByType(LocalDateTime.class, new LocalDateTimeDeserializer(localDateTimeFormat));
     }
 
     /**
