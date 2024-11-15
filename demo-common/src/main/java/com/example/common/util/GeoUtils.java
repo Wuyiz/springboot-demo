@@ -43,11 +43,11 @@ public class GeoUtils {
         double latARad = Math.toRadians(latA);
         double lngBRad = Math.toRadians(lngB);
         double latBRad = Math.toRadians(latB);
-        double lngRadDelta = lngBRad - lngARad;
-        double latRadDelta = latBRad - latARad;
+        double lngRadDiff = lngBRad - lngARad;
+        double latRadDiff = latBRad - latARad;
 
-        double a = Math.pow(Math.sin(latRadDelta / 2), 2) +
-                Math.cos(latARad) * Math.cos(latBRad) * Math.pow(Math.sin(lngRadDelta / 2), 2);
+        double a = Math.pow(Math.sin(latRadDiff / 2), 2) +
+                Math.cos(latARad) * Math.cos(latBRad) * Math.pow(Math.sin(lngRadDiff / 2), 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
         return earthRadius * c;
